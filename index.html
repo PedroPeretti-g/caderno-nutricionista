@@ -1,0 +1,1855 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; manifest-src 'self'; base-uri 'none'; form-action 'self'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Caderno da Nutri</title>
+<meta name="description" content="Caderno da Nutri: pacientes, programas, finanças e metas do consultório.">
+<meta name="theme-color" content="#fbd9e1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#4a2540" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nutri">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700&display=swap">
+<style>
+/* Layout: faixa rosa clara no topo (navegação em pílula, título serifado e uma frutinha animada sobre um prato) seguida do app em largura de leitura.
+   Paleta: blush #fff3f5, rosa #f4a6b8, ameixa #4a2433, pistache #b9d9b0, pêssego #ffcdb2, lilás #e1cdf0. Títulos em Fraunces; textos em Instrument Sans; botões em pílula.
+   Nutrição: pacientes, programas de acompanhamento, finanças do consultório, metas do mês (feitas / não feitas) e atendimentos registrados. */
+:root{
+  --bg:#fff3f5; --surface:#ffffff; --surface-2:#fde8ed;
+  --fg:#4a2433; --muted:rgba(74,36,51,.72);
+  --line:rgba(74,36,51,.12); --line-strong:rgba(74,36,51,.36);
+  --accent:#f4a6b8; --accent-ink:#4a2433; --focus:#b2415f; --bar-fill:#d9617f; --btn-edge:rgba(74,36,51,.18);
+  --ink:#3a1523; --rose:#f4a6b8; --sage:#b9d9b0; --peach:#ffcdb2; --lilac:#e1cdf0; --sky:#bfdcf0;
+  --late:#b3263f; --late-bg:rgba(179,38,63,.09);
+  --hero-bg:#fbd9e1; --hero-fg:#4a2433; --hero-line:rgba(74,36,51,.32); --hero-muted:rgba(74,36,51,.8); --nav-line:rgba(74,36,51,.18);
+  --blob:#ffeef2; --plate:#ffffff; --plate-edge:#4a2433;
+  --shade:rgba(74,36,51,.45);
+  --serif:Fraunces,Georgia,'Times New Roman',serif;
+  --sans:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --r:24px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#171220; --surface:#2d2538; --surface-2:#3c3149;
+    --fg:#fbeff3; --muted:rgba(251,239,243,.74);
+    --line:rgba(251,239,243,.18); --line-strong:rgba(251,239,243,.46);
+    --accent:#f4a6b8; --accent-ink:#3a1523; --focus:#f4a6b8; --bar-fill:#f4a6b8; --btn-edge:transparent;
+    --late:#ff9aa8; --late-bg:rgba(255,154,168,.16);
+    --hero-bg:#4a2540; --hero-fg:#fbeff3; --hero-line:rgba(251,239,243,.42); --hero-muted:rgba(251,239,243,.82); --nav-line:rgba(251,239,243,.24);
+    --blob:#613056; --plate:#7a4468; --plate-edge:#1d0e1a;
+    --shade:rgba(0,0,0,.6);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171220; --surface:#2d2538; --surface-2:#3c3149;
+  --fg:#fbeff3; --muted:rgba(251,239,243,.74);
+  --line:rgba(251,239,243,.18); --line-strong:rgba(251,239,243,.46);
+  --accent:#f4a6b8; --accent-ink:#3a1523; --focus:#f4a6b8; --bar-fill:#f4a6b8; --btn-edge:transparent;
+  --late:#ff9aa8; --late-bg:rgba(255,154,168,.16);
+  --hero-bg:#4a2540; --hero-fg:#fbeff3; --hero-line:rgba(251,239,243,.42); --hero-muted:rgba(251,239,243,.82); --nav-line:rgba(251,239,243,.24);
+  --blob:#613056; --plate:#7a4468; --plate-edge:#1d0e1a;
+  --shade:rgba(0,0,0,.6);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--sans)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+[hidden]{display:none!important}
+h1,h2,h3,h4,p,dl,dd{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font-size:13px;letter-spacing:.06em;color:var(--muted)}
+
+/* ---------- topo ---------- */
+.hero{background:var(--hero-bg);color:var(--hero-fg)}
+.hero .eyebrow,.hero-foot{color:var(--hero-muted)}
+.hero-in{padding-block:16px 18px}
+.navpill{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:10px 12px 10px 18px;border:1px solid var(--nav-line);border-radius:34px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none}
+.brand-t{display:flex;flex-direction:column;line-height:1.1}
+.brand-t b{font-family:var(--serif);font-size:20px;letter-spacing:-.02em}
+.brand-t small{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--hero-muted);margin-top:2px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px}
+.tab{display:inline-flex;align-items:center;gap:8px;border:0;background:transparent;color:var(--hero-fg);font-size:14px;padding:11px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;opacity:.84}
+.tab[aria-selected="true"]{opacity:1;box-shadow:inset 0 0 0 1px var(--hero-line)}
+.tab[aria-selected="true"]::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--bar-fill)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:12px 32px;align-items:center;padding-top:34px}
+.hero h1{font-family:var(--serif);font-weight:700;font-size:clamp(44px,8vw,80px);line-height:1.05;letter-spacing:-.03em;margin:12px 0 14px;text-wrap:balance}
+.hero-sub{font-size:17px;max-width:44ch;color:var(--hero-muted)}
+.hero-cta{margin-top:24px}
+.stage{width:100%;max-width:420px;justify-self:end}
+.scene{width:100%;height:auto;display:block;overflow:visible}
+.blob{fill:var(--blob)}
+.plate{fill:var(--plate);stroke:var(--plate-edge);stroke-width:2}
+.plate-in{fill:var(--blob)}
+.o{stroke:#4a2433;stroke-width:2;stroke-linejoin:round}
+.spark{fill:var(--accent);transform-box:fill-box;transform-origin:center;animation:twinkle 3s ease-in-out infinite}
+.spark.b{animation-delay:1s;fill:var(--bar-fill)}.spark.c{animation-delay:2s}
+.fruit{opacity:0;transition:opacity .7s}
+.fruit.on{opacity:1}
+.f-bob{animation:bob 3.2s ease-in-out infinite}
+.f-shadow{transform-box:fill-box;transform-origin:center;animation:shadow 3.2s ease-in-out infinite;fill:var(--shade)}
+.arm{fill:none;stroke:#4a2433;stroke-width:5;stroke-linecap:round}
+.arm-l{transform-box:fill-box;transform-origin:100% 100%;animation:wave 2.6s ease-in-out infinite}
+.arm-r{transform-box:fill-box;transform-origin:0% 100%;animation:waver 2.6s ease-in-out infinite}
+.sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway 2.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes shadow{0%,100%{transform:scale(1);opacity:.3}50%{transform:scale(.84);opacity:.18}}
+@keyframes wave{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-8deg)}}
+@keyframes waver{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(8deg)}}
+@keyframes sway{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(5deg)}}
+@keyframes twinkle{0%,100%{transform:scale(.7);opacity:.6}50%{transform:scale(1.15);opacity:1}}
+.hero-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 16px;margin-top:26px;font-size:13px}
+@media (max-width:759px){.hero-grid{grid-template-columns:minmax(0,1fr)}.stage{justify-self:center;max-width:340px}}
+
+/* ---------- botões e campos ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:0;background:var(--accent);color:var(--accent-ink);box-shadow:inset 0 0 0 1px var(--btn-edge);font-weight:600;font-size:15px;padding:14px 24px;border-radius:32px;cursor:pointer;line-height:1.1}
+.btn.sm{padding:9px 16px;font-size:14px}
+.btn.ghost{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1px var(--line-strong)}
+.hero .btn.ghost{color:var(--hero-fg);box-shadow:inset 0 0 0 1px var(--hero-line)}
+.btn.danger{background:transparent;color:var(--late);box-shadow:inset 0 0 0 1px var(--late)}
+.btn[disabled]{opacity:.5;cursor:default}
+.arr{flex:none}
+input,select,textarea{font:inherit;font-size:16px;color:var(--fg);background:var(--surface);border:1px solid var(--line-strong);border-radius:16px;padding:11px 14px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:84px}
+select{width:auto;max-width:100%}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.lbl-s{font-size:13px;font-weight:600;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.err{color:var(--late);font-size:14px;font-weight:500;min-height:1.2em}
+.icon-btn{width:42px;height:42px;flex:none;display:inline-grid;place-items:center;border-radius:50%;border:1px solid var(--line-strong);background:transparent;cursor:pointer}
+
+.banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin-top:24px;padding:14px 20px;border-radius:var(--r);background:var(--peach);color:var(--ink)}
+.banner p{flex:1 1 260px;font-weight:500}
+.banner .btn{background:var(--ink);color:#fde9ef}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+main.wrap{padding-block:12px 80px}
+
+/* ---------- cabeçalhos de seção ---------- */
+.sec-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 16px;margin:40px 0 18px}
+.monthnav{display:flex;align-items:center;gap:10px;min-width:0}
+.sec-head h2,.h2s{font-family:var(--serif);font-weight:700;font-size:clamp(30px,5vw,46px);line-height:1.1;letter-spacing:-.025em;min-width:0;text-wrap:balance}
+.h2s{font-size:clamp(26px,4vw,36px)}
+.sec-head .eyebrow{margin-bottom:8px}
+.head-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+
+/* ---------- financeiro ---------- */
+.fin-top{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;margin-bottom:26px}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start}
+.tile{padding:18px 20px;border-radius:var(--r);background:var(--surface);border:1px solid var(--line);min-width:0}
+.tile.main{grid-column:1/-1;background:var(--accent);color:var(--accent-ink);border-color:transparent}
+.lbl{font-size:13px;letter-spacing:.04em;color:var(--muted)}
+.tile.main .lbl,.tile.main .sub{color:var(--accent-ink);opacity:.82}
+.val{margin-top:6px;font-size:30px;line-height:1.12;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tile.main .val{font-size:42px}
+.val.late{color:var(--late)}
+.sub{margin-top:4px;font-size:13px;color:var(--muted)}
+.bar{height:8px;margin-top:12px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--bar-fill)}
+.tile.main .bar{background:rgba(74,36,51,.18);margin-top:16px}
+.tile.main .bar i{background:var(--accent-ink)}
+
+.chart{padding:18px 20px;min-width:0}
+.bars{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;align-items:end;height:150px;margin-top:10px}
+.col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;height:100%;min-width:0}
+.col .v{font-size:11px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.col .b{width:100%;max-width:44px;border-radius:8px 8px 3px 3px;background:var(--line-strong)}
+.col.sel .b{background:var(--bar-fill)}
+.col.sel .v,.col.sel .m{color:var(--fg)}
+.col .m{font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip-btn{border:0;box-shadow:inset 0 0 0 1px var(--line-strong);background:transparent;font-weight:500;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer}
+.chip-btn .n{margin-left:6px;color:var(--muted)}
+.chip-btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);box-shadow:inset 0 0 0 1px var(--btn-edge);font-weight:600}
+.chip-btn[aria-pressed="true"] .n{color:inherit;opacity:.75}
+.toolbar-fields{display:flex;flex-wrap:wrap;gap:8px;flex:1 1 280px;justify-content:flex-end}
+.toolbar-fields input{flex:1 1 180px;max-width:320px}
+
+.list{overflow:hidden}
+.arow:nth-child(even),.row:nth-child(even){background:color-mix(in srgb,var(--surface-2) 45%,transparent)}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:14px 20px;border-bottom:1px solid var(--line)}
+.row:last-child{border-bottom:0}
+.who{flex:1 1 240px;min-width:0;display:flex;align-items:center;gap:14px;text-align:left;background:none;border:0;padding:0;cursor:pointer}
+.avatar{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--surface-2);border:3px solid var(--ring,var(--line-strong));box-shadow:0 0 0 1px var(--line);font-weight:700;font-size:14px}
+.avatar.sm{width:36px;height:36px;font-size:12px}
+.who-txt{min-width:0;display:flex;flex-direction:column;gap:2px}
+.who-txt strong{font-size:16px;font-weight:600;overflow-wrap:anywhere}
+.meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:2px 8px;align-items:center}
+.tag{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line-strong);color:var(--fg)}
+.acts{display:flex;align-items:center;gap:10px;margin-left:auto}
+.pill{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:5px 12px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line-strong);color:var(--muted);white-space:nowrap}
+.pill.pago{background:var(--sage);color:var(--ink);box-shadow:none}
+.pill.atrasado{background:var(--late-bg);color:var(--late);box-shadow:inset 0 0 0 1px var(--late)}
+.pill.pendente{color:var(--fg)}
+.empty{padding:40px 20px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+.empty strong{font-family:var(--serif);font-size:24px;letter-spacing:-.02em}
+.empty p{color:var(--muted);max-width:46ch}
+
+/* ---------- programas ---------- */
+.tbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+.tbar-in{padding-block:10px;display:flex;flex-direction:column;gap:8px}
+.tchips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:thin}
+.tchip{flex:none;display:inline-flex;align-items:center;gap:8px;border:0;box-shadow:inset 0 0 0 1px var(--line-strong);background:transparent;font-weight:500;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.tchip[aria-pressed="true"]{background:var(--fg);color:var(--bg);box-shadow:none;font-weight:600}
+.tdot{display:inline-block;flex:none;width:10px;height:10px;border-radius:50%;background:var(--tc,var(--accent));box-shadow:0 0 0 1px rgba(74,36,51,.35)}
+.tl{display:inline-flex;align-items:center;gap:6px}
+.tinfo{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;font-size:14px;color:var(--muted)}
+.tinfo b{color:var(--fg)}
+.tinfo .btn{margin-left:auto}
+.tcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.tcard{--tc:var(--accent);padding:20px;border:1px solid var(--line);border-top:5px solid var(--tc);border-radius:var(--r);background:var(--surface);display:flex;flex-direction:column;gap:12px;min-width:0}
+.tcard.sel{outline:2px solid var(--fg);outline-offset:2px}
+.tc-h{display:flex;align-items:center;gap:10px}
+.tc-h h3{font-family:var(--serif);font-size:26px;line-height:1.1;letter-spacing:-.02em;overflow-wrap:anywhere}
+.tc-when{font-weight:600}
+.tc-sub{font-size:14px;color:var(--muted);overflow-wrap:anywhere}
+.tc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tc-stats div{padding:10px 12px;border-radius:14px;background:var(--surface-2);border:1px solid var(--line)}
+.tc-stats b{display:block;font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tc-stats span{font-size:12px;color:var(--muted)}
+.tc-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto}
+.dpicks{display:flex;flex-wrap:wrap;gap:8px}
+.dpick{position:relative}
+.dpick input{position:absolute;opacity:0;inset:0;width:100%;height:100%;cursor:pointer;margin:0}
+.dpick span{display:inline-flex;align-items:center;justify-content:center;min-width:56px;padding:10px 14px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line-strong);font-weight:600;font-size:14px}
+.dpick input:checked+span{background:var(--accent);color:var(--accent-ink);box-shadow:none}
+.dpick input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+.access{margin-top:30px;padding:20px 22px;display:flex;flex-direction:column;gap:6px}
+.access h3{font-family:var(--serif);font-size:22px;letter-spacing:-.02em}
+.planrows{display:flex;flex-direction:column}
+.planrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.planrow:first-child{border-top:0}
+.planrow .p-name{flex:1 1 160px}
+.day .plan{display:flex;gap:3px;width:100%;margin-top:auto}
+.day .plan i{flex:1;height:4px;border-radius:3px;background:var(--tc)}
+.day .dots{margin-top:2px!important}
+
+/* ---------- pacientes ---------- */
+.arow{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.arow:last-child{border-bottom:0}
+.arow .who{flex:1 1 320px}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:2px 16px;margin-top:6px;font-size:13px}
+.info span{min-width:0;overflow-wrap:anywhere;color:var(--muted)}
+.info b{color:var(--fg);font-weight:600}
+.care{display:inline-flex;margin-top:6px;padding:4px 12px;border-radius:12px;background:var(--late-bg);color:var(--late);font-size:13px;font-weight:500;overflow-wrap:anywhere}
+.arow .acts{margin-left:auto}
+.pesos{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:18px;background:var(--surface-2);padding:2px 14px;max-height:220px;overflow-y:auto}
+.peso{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.peso:first-child{border-top:0}
+.peso b{font-weight:600}
+.peso em{font-style:normal;color:var(--muted);font-size:13px}
+.pesos-add{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) auto;gap:8px;align-items:end}
+@media (max-width:520px){.pesos-add{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pesos-add .btn{grid-column:1/-1}}
+.imc{font-size:14px;color:var(--muted)}
+
+/* ---------- metas ---------- */
+.tag-ev{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--rose);color:var(--ink)}
+.cat-negocio .tag-ev,.tag-ev.cat-negocio{background:var(--sage)}
+.cat-conteudo .tag-ev,.tag-ev.cat-conteudo{background:var(--lilac)}
+.cat-estudo .tag-ev,.tag-ev.cat-estudo{background:var(--sky)}
+.cat-pessoal .tag-ev,.tag-ev.cat-pessoal{background:var(--peach)}
+.when{font-size:13px;color:var(--muted)}
+.ev-up{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:8px}
+.evcard{--c:var(--rose);display:flex;flex-direction:column;align-items:stretch;gap:8px;text-align:left;padding:18px 20px;border:1px solid var(--line);border-top:5px solid var(--c);border-radius:var(--r);background:var(--surface);cursor:pointer;min-width:0}
+.evcard.cat-negocio{--c:var(--sage)}.evcard.cat-conteudo{--c:var(--lilac)}.evcard.cat-estudo{--c:var(--sky)}.evcard.cat-pessoal{--c:var(--peach)}
+.evcard>span,.evcard>strong{display:block;min-width:0}
+.evc-top{display:flex!important;align-items:center;justify-content:space-between;gap:8px}
+.evc-t{font-family:var(--serif);font-size:22px;line-height:1.15;letter-spacing:-.015em;overflow-wrap:anywhere}
+.evc-m{font-size:14px;color:var(--muted)}
+.evc-foot{display:flex!important;justify-content:space-between;align-items:center;gap:8px;font-size:14px;font-weight:600;margin-top:4px}
+.evcard .bar{margin-top:2px}
+.goal{--c:var(--rose);padding:18px 20px;display:flex;flex-direction:column;gap:12px;border-radius:18px;background:var(--surface-2);border:1px solid var(--line);border-top:5px solid var(--c);min-width:0}
+.goal.cat-negocio{--c:var(--sage)}.goal.cat-conteudo{--c:var(--lilac)}.goal.cat-estudo{--c:var(--sky)}.goal.cat-pessoal{--c:var(--peach)}
+.goal.m-feita{opacity:.92}
+.goal.m-feita h3{text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:var(--line-strong)}
+.goal-h{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px}
+.goal h3{font-family:var(--serif);font-size:24px;line-height:1.15;letter-spacing:-.015em;overflow-wrap:anywhere}
+.goal-note{white-space:pre-wrap;overflow-wrap:anywhere;color:var(--muted)}
+.goal-prog{display:flex;flex-direction:column;gap:6px}
+.goal-prog .line{display:flex;align-items:center;justify-content:space-between;gap:10px;font-variant-numeric:tabular-nums}
+.stepper{display:inline-flex;gap:6px}
+.goal-acts{display:flex;flex-wrap:wrap;gap:8px}
+.goal-meta{font-size:14px;color:var(--muted)}
+.day-events{display:flex;flex-direction:column;gap:14px}
+
+.plan-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start;margin-top:30px}
+.plan-main{display:flex;flex-direction:column;gap:16px;min-width:0}
+.cal-card{padding:16px}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.dow{padding:4px 0 8px;text-align:center;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.day{position:relative;min-height:54px;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:6px;border-radius:14px;border:1px solid var(--line);background:transparent;cursor:pointer;text-align:left;overflow:hidden}
+.day:hover{background:var(--surface-2)}
+.day .n{font-size:14px;font-weight:600;padding:0 6px;margin:-1px 0 0 -3px;border-radius:999px}
+.day .chip,.day .more{display:none}
+.day .dots{display:flex;gap:3px;margin-top:auto}
+.day .dots i{width:6px;height:6px;border-radius:50%;background:var(--bar-fill)}
+.day .dots i.f{background:#6bbf6a}
+.day .dots i.e{background:var(--late)}
+.day.today .n{background:var(--accent);color:var(--accent-ink)}
+.day.sel{outline:2px solid var(--fg);outline-offset:1px}
+@media (min-width:640px){
+  .day{min-height:92px}
+  .day .chip{display:block;max-width:100%;padding:2px 7px;border-radius:7px;background:var(--rose);color:var(--ink);font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .day .chip.feita{background:var(--sage);text-decoration:line-through}
+  .day .chip.atrasada{background:var(--late-bg);color:var(--late);box-shadow:inset 0 0 0 1px var(--late)}
+  .day .more{display:block;font-size:12px;font-weight:600;color:var(--muted)}
+  .day .dots{display:none}
+}
+.day-panel{padding:22px;display:flex;flex-direction:column;gap:18px}
+.day-panel h3{font-family:var(--serif);font-size:28px;line-height:1.1;letter-spacing:-.02em}
+.lessons{display:flex;flex-direction:column;gap:10px}
+.lesson{padding:16px;border:1px solid var(--line);border-radius:18px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.lesson-h{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.lesson-h strong{font-size:17px;font-weight:700;overflow-wrap:anywhere}
+.lesson p{white-space:pre-wrap;overflow-wrap:anywhere}
+.lesson .next{font-size:14px;color:var(--muted)}
+.lesson-acts{display:flex;gap:8px;flex-wrap:wrap}
+.p-name{flex:1 1 150px;min-width:0;display:flex;flex-direction:column;font-weight:600;overflow-wrap:anywhere}
+.p-name em{font-style:normal;font-weight:400;font-size:13px;color:var(--muted)}
+.sub-h{font-size:13px;letter-spacing:.04em;color:var(--muted);font-weight:600}
+.form{display:flex;flex-direction:column;gap:12px;padding-top:18px;border-top:1px solid var(--line)}
+.form h4{font-family:var(--serif);font-size:20px;letter-spacing:-.01em}
+.form-acts{display:flex;flex-wrap:wrap;gap:8px}
+.hint{font-size:14px;color:var(--muted)}
+
+.summary{padding:22px;display:flex;flex-direction:column;gap:20px;min-width:0}
+.summary h3{font-family:var(--serif);font-size:26px;line-height:1.1;letter-spacing:-.02em}
+.summary h4{font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--muted);margin-bottom:8px}
+.mini{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mini div{padding:12px 14px;border-radius:16px;background:var(--surface-2);border:1px solid var(--line)}
+.mini b{display:block;font-size:28px;line-height:1.1;font-weight:700;font-variant-numeric:tabular-nums}
+.mini span{font-size:12px;color:var(--muted)}
+.mini .late b{color:var(--late)}
+.cats{display:flex;flex-wrap:wrap;gap:6px}
+.cat{padding:6px 12px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--line-strong);font-size:14px;overflow-wrap:anywhere}
+.cat b{margin-left:6px;font-variant-numeric:tabular-nums}
+.weeks{display:flex;flex-direction:column;gap:14px}
+.weeks ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.weeks li{display:flex;gap:10px;font-size:14px;min-width:0}
+.weeks li .d{flex:none;width:2.7em;color:var(--muted);font-variant-numeric:tabular-nums}
+.weeks li span:last-child{min-width:0;overflow-wrap:anywhere}
+.weeks li em{font-style:normal;color:var(--muted)}
+.sum-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+/* ---------- folha ---------- */
+.overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(58,21,35,.6)}
+.sheet{width:min(700px,100%);max-height:92vh;overflow-y:auto;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:28px 28px 0 0;
+  padding:22px max(16px,env(safe-area-inset-left,0px)) calc(26px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px))}
+@media (min-width:700px){.overlay{align-items:center;padding:24px}.sheet{border-radius:28px;padding:28px}}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.sheet-h h3{font-family:var(--serif);font-size:30px;line-height:1.1;letter-spacing:-.02em}
+.sheet form{display:flex;flex-direction:column;gap:26px}
+.sheet fieldset{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:12px}
+.sheet legend{padding:0;margin-bottom:12px;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--muted)}
+.check{display:flex;align-items:center;gap:10px;font-weight:500}
+.check input{width:20px;height:20px;accent-color:#d9617f}
+.pay-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.paygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
+.pm{display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border-radius:16px;border:0;box-shadow:inset 0 0 0 1px var(--line-strong);background:transparent;cursor:pointer}
+.pm-m{font-weight:700;text-transform:uppercase;font-size:13px;letter-spacing:.04em}
+.pm-s{font-size:11px;color:var(--muted)}
+.pm.pago{background:var(--sage);color:var(--ink);box-shadow:none}
+.pm.pago .pm-s{color:var(--ink)}
+.pm.atrasado{box-shadow:inset 0 0 0 1px var(--late);color:var(--late)}
+.pm.atrasado .pm-s{color:var(--late)}
+.pm.na{opacity:.4;cursor:default}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:80;max-width:calc(100% - 32px);padding:13px 20px;border-radius:999px;background:var(--fg);color:var(--bg);font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.28)}
+
+@media (max-width:860px){.fin-top,.plan-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:560px){
+  .navpill{border-radius:28px;padding:12px 12px 12px 16px}
+  .tabs{width:100%}
+  .tab{flex:1 1 auto;justify-content:center;padding:11px 10px;font-size:13.5px}
+  .tile.main .val{font-size:34px}
+  .acts{margin-left:0;width:100%;justify-content:space-between}
+  .hero-sub{font-size:16px}
+  .day-panel,.summary{padding:18px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* ---------- login e instalação ---------- */
+.auth{position:fixed;inset:0;z-index:100;overflow-y:auto;background:var(--bg);display:flex;align-items:flex-start;justify-content:center;padding:max(24px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(24px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.auth-card{width:100%;max-width:420px;margin:auto;padding:28px 24px;display:flex;flex-direction:column;gap:16px}
+.auth-card h1{font:700 28px/1.15 var(--serif)}
+.auth-card form{display:flex;flex-direction:column;gap:14px}
+.auth-brand{display:flex;align-items:center;gap:12px}
+.auth-brand .brand-t b{display:block;font:700 18px/1.2 var(--serif)}
+.auth-brand .brand-t small{color:var(--muted);font-size:13px}
+.auth-msg{min-height:1.2em;font-size:14px;font-weight:500;color:var(--late)}
+.auth-msg.ok{color:var(--fg)}
+.auth-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 16px}
+.link{border:0;background:none;padding:6px 0;color:var(--fg);font-weight:600;font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.auth .check{align-items:flex-start;font-size:14px;line-height:1.4}
+.auth .check input{margin-top:2px;flex:none}
+#logout-btn{margin-left:auto}
+
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap hero-in">
+    <div class="navpill">
+      <div class="brand">
+        <svg width="36" height="36" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#f4a6b8"/><path d="M16 9c5-1 8 2 7.4 6.4C22.8 20 19 23.4 16 24c-3-.6-6.800-4-7.400-8.600C8 11 11 8 16 9Z" fill="#f2607d" stroke="#4a2433" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 9.400c-1.600-2-3.800-2.200-5-1.200 1.400 1.400 3.200 1.800 5 1.200Zm0 0c1.600-2 3.800-2.200 5-1.200-1.400 1.400-3.200 1.800-5 1.200Z" fill="#6bbf6a" stroke="#4a2433" stroke-width="1.4" stroke-linejoin="round"/></svg>
+        <div class="brand-t"><b>Caderno da Nutri</b><small>pacientes · metas · consultório</small></div>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="Seções do caderno">
+        <button type="button" class="tab" role="tab" id="tab-pacientes" aria-controls="panel-pacientes" aria-selected="true" data-tab="pacientes">Pacientes</button>
+        <button type="button" class="tab" role="tab" id="tab-programas" aria-controls="panel-programas" aria-selected="false" data-tab="programas">Programas</button>
+        <button type="button" class="tab" role="tab" id="tab-financeiro" aria-controls="panel-financeiro" aria-selected="false" data-tab="financeiro">Finanças</button>
+        <button type="button" class="tab" role="tab" id="tab-metas" aria-controls="panel-metas" aria-selected="false" data-tab="metas">Metas e planejamento</button>
+      </nav>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow" id="hero-eyebrow">Caderno da Nutri · Nutrição</p>
+        <h1 id="hero-h1">Seus pacientes.</h1>
+        <p class="hero-sub" id="hero-sub"></p>
+        <div class="hero-cta"><button type="button" class="btn" id="hero-cta" data-act="hero-cta"></button></div>
+      </div>
+      <div class="stage" aria-hidden="true">
+        <svg class="scene" id="scene" viewBox="0 0 360 290" focusable="false">
+          <defs>
+            <g id="face">
+              <circle cx="160" cy="146" r="5.500" fill="#4a2433"/><circle cx="200" cy="146" r="5.500" fill="#4a2433"/>
+              <circle cx="161.800" cy="144" r="1.700" fill="#fff"/><circle cx="201.800" cy="144" r="1.700" fill="#fff"/>
+              <ellipse cx="147" cy="160" rx="9" ry="5.500" fill="#ff9fb4" opacity=".85"/><ellipse cx="213" cy="160" rx="9" ry="5.500" fill="#ff9fb4" opacity=".85"/>
+              <path d="M171 157Q180 168 189 157" fill="none" stroke="#4a2433" stroke-width="3.200" stroke-linecap="round"/>
+            </g>
+          </defs>
+          <circle class="blob" cx="180" cy="140" r="124"/>
+          <path class="spark" d="M62 70Q64 62 72 60Q64 58 62 50Q60 58 52 60Q60 62 62 70Z"/>
+          <path class="spark b" d="M302 98Q304 90 312 88Q304 86 302 78Q300 86 292 88Q300 90 302 98Z"/>
+          <path class="spark c" d="M286 222Q287.500 217 293 215.500Q287.500 214 286 209Q284.500 214 279 215.500Q284.500 217 286 222Z"/>
+          <ellipse cx="180" cy="248" rx="134" ry="28" fill="#000" opacity=".1"/>
+          <ellipse class="plate" cx="180" cy="238" rx="128" ry="28"/>
+          <ellipse class="plate-in" cx="180" cy="234" rx="92" ry="17"/>
+          <ellipse class="f-shadow" cx="180" cy="230" rx="54" ry="9"/>
+          <g class="f-bob">
+            <path class="arm arm-l" d="M118 172C100 172 90 158 92 142"/>
+            <path class="arm arm-r" d="M242 172C260 172 270 158 268 142"/>
+            <g class="fruit on" data-n="morango">
+              <path class="o" fill="#f2607d" d="M180 92C226 88 252 112 246 152C240 192 208 222 180 230C152 222 120 192 114 152C108 112 134 88 180 92Z"/>
+              <g fill="#fff0c2">
+                <ellipse cx="136" cy="134" rx="2.600" ry="4" transform="rotate(-20 136 134)"/><ellipse cx="226" cy="134" rx="2.600" ry="4" transform="rotate(20 226 134)"/>
+                <ellipse cx="141" cy="178" rx="2.600" ry="4" transform="rotate(-25 141 178)"/><ellipse cx="219" cy="178" rx="2.600" ry="4" transform="rotate(25 219 178)"/>
+                <ellipse cx="160" cy="203" rx="2.600" ry="4" transform="rotate(-12 160 203)"/><ellipse cx="200" cy="203" rx="2.600" ry="4" transform="rotate(12 200 203)"/>
+                <ellipse cx="180" cy="214" rx="2.600" ry="4"/><ellipse cx="152" cy="114" rx="2.600" ry="4" transform="rotate(-30 152 114)"/><ellipse cx="208" cy="114" rx="2.600" ry="4" transform="rotate(30 208 114)"/>
+              </g>
+              <use href="#face"/>
+              <g class="sway">
+                <path class="o" fill="#6bbf6a" d="M180 96C166 76 146 78 134 90C150 98 166 102 180 96Z"/>
+                <path class="o" fill="#6bbf6a" d="M180 96C194 76 214 78 226 90C210 98 194 102 180 96Z"/>
+                <path class="o" fill="#6bbf6a" d="M180 96C172 74 176 62 186 56C192 68 190 84 180 96Z"/>
+              </g>
+            </g>
+            <g class="fruit" data-n="maçã">
+              <path class="o" fill="#f27a7a" d="M180 104C198 84 244 92 248 140C252 188 220 230 196 230C188 230 184 226 180 226C176 226 172 230 164 230C140 230 108 188 112 140C116 92 162 84 180 104Z"/>
+              <path d="M129 130Q131 110 150 102" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="6" stroke-linecap="round"/>
+              <use href="#face" y="4"/>
+              <path d="M180 104C180 92 182 82 188 74" fill="none" stroke="#7a4a2b" stroke-width="5" stroke-linecap="round"/>
+              <path class="o sway" fill="#6bbf6a" d="M187 90C188 74 200 64 214 64C214 80 202 92 187 90Z"/>
+            </g>
+            <g class="fruit" data-n="laranja">
+              <circle class="o" cx="180" cy="160" r="72" fill="#ffae5c"/>
+              <g fill="#ff9334">
+                <circle cx="132" cy="132" r="2.600"/><circle cx="232" cy="134" r="2.600"/><circle cx="128" cy="176" r="2.600"/><circle cx="236" cy="180" r="2.600"/>
+                <circle cx="156" cy="208" r="2.600"/><circle cx="206" cy="210" r="2.600"/><circle cx="180" cy="224" r="2.600"/>
+              </g>
+              <path d="M130 136Q134 114 154 102" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="6" stroke-linecap="round"/>
+              <use href="#face" y="10"/>
+              <path class="o sway" fill="#6bbf6a" d="M182 90C192 70 212 66 224 74C216 90 200 94 182 90Z"/>
+              <circle cx="181" cy="89" r="4" fill="#7a4a2b"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="hero-foot">
+      <span id="hero-count"></span>
+      <span id="store-note">Carregando…</span>
+      <button type="button" class="btn ghost sm" id="logout-btn" data-act="logout" hidden>Sair</button>
+    </div>
+  </div>
+</header>
+
+<div class="tbar" id="tbar" hidden>
+  <div class="wrap tbar-in">
+    <div class="tchips" id="tchips" role="group" aria-label="Filtrar por programa"></div>
+    <div class="tinfo" id="tinfo" hidden></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="banner" id="demo-banner" hidden>
+    <p>Você está vendo dados de exemplo. Eles não são salvos. Quando quiser, comece com seus próprios pacientes.</p>
+    <button type="button" class="btn sm" data-act="exit-demo">Começar com meus dados</button>
+  </div>
+
+  <section id="panel-pacientes" role="tabpanel" aria-labelledby="tab-pacientes">
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow" id="al-eyebrow">Cadastro</p>
+        <h2 id="al-title">Pacientes</h2>
+      </div>
+      <div class="head-actions"><button type="button" class="btn sm" data-act="new-paciente" data-key="new-al">Novo paciente</button></div>
+    </div>
+    <div class="toolbar">
+      <div class="chips" id="al-chips" role="group" aria-label="Filtrar pacientes"></div>
+      <div class="toolbar-fields">
+        <label class="sr" for="al-q">Buscar paciente</label>
+        <input id="al-q" type="search" placeholder="Buscar por nome, telefone ou e-mail" autocomplete="off">
+      </div>
+    </div>
+    <div class="card list" id="al-list"></div>
+  </section>
+
+  <section id="panel-programas" role="tabpanel" aria-labelledby="tab-programas" hidden>
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Organização</p>
+        <h2 id="tu-title">Programas</h2>
+      </div>
+      <div class="head-actions"><button type="button" class="btn sm" data-act="new-prog" data-key="new-tu">Novo programa</button></div>
+    </div>
+    <div class="tcards" id="tu-grid"></div>
+    <div class="card access">
+      <h3>Acesso da nutricionista</h3>
+      <p class="hint">Cada nutricionista entra com a própria conta do Claude. Pacientes, programas, metas, atendimentos e finanças de cada uma ficam separados e privados. Para convidar outra profissional, use o menu Compartilhar desta página e dê a ela permissão de colaboradora.</p>
+    </div>
+  </section>
+
+  <section id="panel-financeiro" role="tabpanel" aria-labelledby="tab-financeiro" hidden>
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Acompanhamentos mensais</p>
+        <div class="monthnav">
+          <button type="button" class="icon-btn" data-act="fin-prev" aria-label="Mês anterior"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <h2 id="fin-label"></h2>
+          <button type="button" class="icon-btn" data-act="fin-next" aria-label="Próximo mês"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
+      </div>
+      <div class="head-actions">
+        <button type="button" class="btn ghost sm" id="export-btn" data-act="export">Exportar recebimentos</button></div>
+    </div>
+
+    <div class="fin-top">
+      <div class="kpis" id="kpis"></div>
+      <div class="card chart" id="chart"></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="chips" id="fin-chips" role="group" aria-label="Filtrar por situação"></div>
+      <div class="toolbar-fields">
+        <label class="sr" for="fin-q">Buscar paciente</label>
+        <input id="fin-q" type="search" placeholder="Buscar paciente" autocomplete="off">
+      </div>
+    </div>
+    <div class="card list" id="list"></div>
+  </section>
+
+  <section id="panel-metas" role="tabpanel" aria-labelledby="tab-metas" hidden>
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">O que falta fazer</p>
+        <h2 class="h2s">Próximas metas</h2>
+      </div>
+      <div class="head-actions">
+        <button type="button" class="btn sm" data-act="new-meta" data-key="newm-top">Nova meta</button>
+      </div>
+    </div>
+    <div class="ev-up" id="ev-up"></div>
+
+    <div class="sec-head">
+      <div>
+        <p class="eyebrow">Calendário de metas e atendimentos</p>
+        <div class="monthnav">
+          <button type="button" class="icon-btn" data-act="plan-prev" aria-label="Mês anterior"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+          <h2 id="plan-label"></h2>
+          <button type="button" class="icon-btn" data-act="plan-next" aria-label="Próximo mês"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+        </div>
+      </div>
+      <div class="head-actions"><span class="hint">Barrinha colorida no dia = atendimento previsto na grade do programa</span></div>
+    </div>
+
+    <div class="plan-grid" style="margin-top:0">
+      <div class="plan-main">
+        <div class="card cal-card">
+          <div class="cal" aria-hidden="true">
+            <div class="dow">Dom</div><div class="dow">Seg</div><div class="dow">Ter</div><div class="dow">Qua</div><div class="dow">Qui</div><div class="dow">Sex</div><div class="dow">Sáb</div>
+          </div>
+          <div class="cal" id="cal" role="group" aria-label="Dias do mês"></div>
+        </div>
+
+        <div class="card day-panel" id="day">
+          <h3 id="day-label"></h3>
+          <h4 class="sub-h" style="margin-bottom:-6px">Metas do dia</h4>
+          <div class="day-events" id="day-events"></div>
+          <div><button type="button" class="btn ghost sm" data-act="new-meta" data-key="newm-day">Nova meta neste dia</button></div>
+          <div id="day-plan"></div>
+          <h4 class="sub-h">Atendimentos registrados</h4>
+          <div class="lessons" id="day-list"></div>
+          <form class="form" id="lesson-form" novalidate>
+            <h4 id="lf-title">Registrar atendimento</h4>
+            <div class="field">
+              <label for="lf-tema">Assunto</label>
+              <input id="lf-tema" type="text" maxlength="120" placeholder="Ex.: Retorno, ajuste do plano alimentar" autocomplete="off">
+            </div>
+            <div class="grid2">
+              <div class="field"><label for="lf-turma">Programa</label><select id="lf-turma" style="width:100%"></select></div>
+              <div class="field"><label for="lf-pac">Paciente</label><select id="lf-pac" style="width:100%"></select></div>
+            </div>
+            <div class="field">
+              <label for="lf-conteudo">Conduta e observações</label>
+              <textarea id="lf-conteudo" maxlength="2000" placeholder="O que foi orientado, queixas, adesão ao plano, exames pedidos"></textarea>
+            </div>
+            <div class="field">
+              <label for="lf-proxima">Retorno</label>
+              <input id="lf-proxima" type="text" maxlength="200" placeholder="Opcional. Ex.: em 15 dias, com exames" autocomplete="off">
+            </div>
+            <div class="err" id="lf-err" role="alert"></div>
+            <div class="form-acts">
+              <button type="submit" class="btn" id="lf-save">Salvar atendimento</button>
+              <button type="button" class="btn ghost" id="lf-cancel" data-act="cancel-edit" hidden>Cancelar edição</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <aside class="card summary" id="summary" aria-labelledby="sum-title"></aside>
+    </div>
+  </section>
+</main>
+
+<div class="overlay" id="overlay" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<div class="auth" id="auth" role="dialog" aria-modal="true" aria-label="Entrar no caderno" hidden></div>
+
+
+<script>
+/* ============ CONFIGURAÇÃO ============
+   Cole aqui a Project URL e a chave anon/publishable do seu projeto Supabase
+   (Project Settings > API). Estas duas são públicas por desenho: quem protege os dados é o RLS.
+   NUNCA cole a chave service_role / secret aqui. */
+window.CADERNO_CONFIG = {
+  url: 'https://dxywhmrtvhfwmwflragn.supabase.co',
+  key: 'sb_publishable_tE0V8BgG1iPQgX35ClfonA_bCZZJLrB'
+};
+/* ====================================== */
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" integrity="sha384-0w2KAL2YHP6wKOkUDzkCDGgVvfmHnj02DHeQ6XcHOgTfFsGyonKOpShMH1x6nk9o" crossorigin="anonymous"></script>
+<script>
+(function(){
+'use strict';
+
+/* PURE:START */
+const MES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const DIA = ['dom','seg','ter','qua','qui','sex','sáb'];
+const pad = n => String(n).padStart(2,'0');
+const isoDate = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const ymOf = d => d.getFullYear()+'-'+pad(d.getMonth()+1);
+const parseYM = ym => { const p = ym.split('-'); return [+p[0], +p[1]]; };
+const addMonths = (ym, n) => { const a = parseYM(ym); return ymOf(new Date(a[0], a[1]-1+n, 1)); };
+const daysIn = ym => { const a = parseYM(ym); return new Date(a[0], a[1], 0).getDate(); };
+const fromISO = iso => new Date(+iso.slice(0,4), +iso.slice(5,7)-1, +iso.slice(8,10));
+const fmtBR = iso => iso.slice(8,10)+'/'+iso.slice(5,7)+'/'+iso.slice(0,4);
+const cap = t => t.charAt(0).toUpperCase()+t.slice(1);
+const monthLabel = ym => { const a = parseYM(ym); return cap(new Date(a[0], a[1]-1, 1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'})); };
+const fold = s => String(s==null?'':s).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+
+const dueDate = (s, ym) => ym+'-'+pad(Math.min(Math.max(Math.floor(+s.venc)||5,1), daysIn(ym)));
+const statusOf = (s, ym, todayISO) => {
+  if (s.pay && s.pay[ym]) return 'pago';
+  if (!(+s.valor > 0)) return 'isento';
+  return todayISO > dueDate(s, ym) ? 'atrasado' : 'pendente';
+};
+const rowsFor = (list, ym) => list.filter(s => (s.pay && s.pay[ym]) || (s.ativo !== false && (!s.inicio || s.inicio <= ym)));
+const totalsFor = (rows, ym, todayISO) => {
+  const t = {rec:0, pend:0, late:0, nPaid:0, nPend:0, nLate:0};
+  rows.forEach(s => {
+    const st = statusOf(s, ym, todayISO);
+    if (st === 'pago') { t.rec += (+s.pay[ym].v || 0); t.nPaid++; }
+    else if (st === 'atrasado') { t.late += (+s.valor || 0); t.nLate++; }
+    else if (st === 'pendente') { t.pend += (+s.valor || 0); t.nPend++; }
+  });
+  t.expected = t.rec + t.pend + t.late;
+  t.pct = t.expected ? Math.round(t.rec / t.expected * 100) : 0;
+  return t;
+};
+const recByMonth = (list, ym) => list.reduce((a, s) => a + ((s.pay && s.pay[ym]) ? (+s.pay[ym].v || 0) : 0), 0);
+const shortMoney = v => v >= 1000 ? (Math.round(v/100)/10).toLocaleString('pt-BR')+' mil' : String(Math.round(v));
+const initials = n => { const p = String(n||'').trim().split(/\s+/).filter(Boolean); if (!p.length) return '?'; return (p[0][0] + (p.length > 1 ? p[p.length-1][0] : '')).toUpperCase(); };
+
+const weekdayIdx = iso => fromISO(iso).getDay();
+const monthGrid = ym => { const cells = []; const lead = weekdayIdx(ym+'-01'); for (let i=0;i<lead;i++) cells.push(null); for (let d=1; d<=daysIn(ym); d++) cells.push(ym+'-'+pad(d)); return cells; };
+const cmpAtend = (a, b) => a.date.localeCompare(b.date) || ((a.criado||0) - (b.criado||0));
+const csvCell = v => { let s = String(v==null?'':v); if (/^[=+\-@]/.test(s)) s = "'"+s; return '"'+s.replace(/"/g,'""')+'"'; };
+const evDateShort = iso => DIA[fromISO(iso).getDay()]+', '+(+iso.slice(8,10))+' '+MES[+iso.slice(5,7)-1];
+const daysUntil = (iso, todayISO) => Math.round((fromISO(iso) - fromISO(todayISO)) / 86400000);
+const untilLabel = n => n === 0 ? 'hoje' : n === 1 ? 'amanhã' : n > 1 ? 'em '+n+' dias' : n === -1 ? 'ontem' : 'há '+(-n)+' dias';
+
+/* metas */
+const CATS = {pacientes:'Pacientes', negocio:'Consultório', conteudo:'Conteúdo', estudo:'Estudos', pessoal:'Pessoal'};
+const catKey = m => CATS[m.cat] ? m.cat : 'pessoal';
+const metaStatus = (m, todayISO) => m.feita ? 'feita' : (m.date < todayISO ? 'atrasada' : 'aberta');
+const cmpMeta = (a, b) => a.date.localeCompare(b.date) || ((a.criado||0) - (b.criado||0));
+const metaPct = m => (+m.alvo > 0) ? Math.min(100, Math.round((+m.atual || 0) / (+m.alvo) * 100)) : (m.feita ? 100 : 0);
+const metaTotals = (list, todayISO) => {
+  const t = {n:list.length, feitas:0, abertas:0, atrasadas:0, pct:0};
+  list.forEach(m => { const s = metaStatus(m, todayISO); if (s === 'feita') t.feitas++; else if (s === 'atrasada') t.atrasadas++; else t.abertas++; });
+  t.pct = t.n ? Math.round(t.feitas / t.n * 100) : 0;
+  return t;
+};
+const metaCats = (list, todayISO) => Object.keys(CATS).map(k => {
+  const L = list.filter(m => catKey(m) === k);
+  return {key:k, label:CATS[k], n:L.length, feitas:L.filter(m => metaStatus(m, todayISO) === 'feita').length};
+}).filter(c => c.n > 0);
+
+/* pacientes */
+const pesosSorted = s => (Array.isArray(s.pesos) ? s.pesos : []).filter(p => p && p.d && +p.kg > 0).slice().sort((a, b) => a.d.localeCompare(b.d));
+const lastPeso = s => { const a = pesosSorted(s); if (a.length) return +a[a.length-1].kg; return +s.pesoInicial > 0 ? +s.pesoInicial : null; };
+const pesoDelta = s => { const a = pesosSorted(s), ini = +s.pesoInicial; if (!a.length || !(ini > 0)) return null; return +a[a.length-1].kg - ini; };
+const imcOf = (kg, altCm) => { const h = (+altCm) / 100; return kg > 0 && h > 0.5 ? kg / (h*h) : null; };
+const fmtKg = n => n.toLocaleString('pt-BR',{minimumFractionDigits:1, maximumFractionDigits:1});
+const fmtDelta = d => (d < 0 ? '−' : d > 0 ? '+' : '')+fmtKg(Math.abs(d))+' kg';
+const ageOf = (nasc, todayISO) => { if (!/^\d{4}-\d{2}-\d{2}$/.test(nasc || '')) return null; let a = +todayISO.slice(0,4) - +nasc.slice(0,4); if (todayISO.slice(5) < nasc.slice(5)) a--; return a >= 0 && a < 120 ? a : null; };
+
+/* programas */
+const PROG_COLORS = ['#f4a6b8','#b9d9b0','#ffcdb2','#e1cdf0','#bfdcf0','#f7e08f'];
+const progHue = name => { let h = 0; String(name).split('').forEach(c => { h = (h*31 + c.charCodeAt(0)) >>> 0; }); return h % PROG_COLORS.length; };
+const progDias = t => (Array.isArray(t.dias) ? t.dias : []).map(Number).filter(n => n >= 0 && n <= 6).filter((n, i, a) => a.indexOf(n) === i).sort((a, b) => a - b);
+const progWhen = t => { const d = progDias(t).map(i => cap(DIA[i])).join(' · '); const h = t.hora ? (t.fim ? t.hora+'–'+t.fim : t.hora) : ''; return [d, h].filter(Boolean).join(' · '); };
+const progPlannedOn = (list, iso) => { const w = weekdayIdx(iso); return list.filter(t => progDias(t).indexOf(w) >= 0).sort((a, b) => String(a.hora||'').localeCompare(String(b.hora||'')) || a.nome.localeCompare(b.nome, 'pt-BR')); };
+const nextSlotISO = (t, todayISO) => { if (!progDias(t).length) return null; for (let i = 0; i < 7; i++) { const x = fromISO(todayISO); x.setDate(x.getDate()+i); if (progDias(t).indexOf(x.getDay()) >= 0) return isoDate(x); } return null; };
+
+const summaryText = (ym, metas, ats, todayISO) => {
+  const t = metaTotals(metas, todayISO), out = [monthLabel(ym), ''];
+  out.push('Metas: '+t.feitas+' feitas, '+t.abertas+' a fazer, '+t.atrasadas+' não feitas ('+t.pct+'% cumpridas).', '');
+  const mk = (title, arr) => { if (arr.length) { out.push(title); arr.forEach(m => out.push('- '+m.date.slice(8)+'/'+m.date.slice(5,7)+' '+m.titulo+((+m.alvo > 0) ? ' ('+(+m.atual||0)+'/'+(+m.alvo)+(m.unidade ? ' '+m.unidade : '')+')' : ''))); out.push(''); } };
+  mk('Feitas:', metas.filter(m => metaStatus(m, todayISO) === 'feita'));
+  mk('A fazer:', metas.filter(m => metaStatus(m, todayISO) === 'aberta'));
+  mk('Não feitas:', metas.filter(m => metaStatus(m, todayISO) === 'atrasada'));
+  out.push('Atendimentos registrados: '+ats.length+'.');
+  return out.join('\n').trim();
+};
+/* PURE:END */
+
+const OBJETIVOS = [['','Sem objetivo definido'],['emagrecimento','Emagrecimento'],['ganho','Ganho de massa'],['reeducacao','Reeducação alimentar'],['esportiva','Nutrição esportiva'],['gestante','Gestante e lactante'],['clinica','Nutrição clínica'],['infantil','Infantil'],['outro','Outro']];
+const OBJ = {}; OBJETIVOS.forEach(o => { if (o[0]) OBJ[o[0]] = o[1]; });
+const ARROW = '<svg class="arr" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>';
+const CLOSE_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+
+const BRL = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'});
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => {
+  try { if (crypto.randomUUID) return crypto.randomUUID(); } catch(e){}
+  const b = crypto.getRandomValues(new Uint8Array(16)); b[6] = b[6] & 15 | 64; b[8] = b[8] & 63 | 128;
+  const h = Array.from(b, x => x.toString(16).padStart(2, '0')).join('');
+  return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);
+};
+const plain = o => { const c = JSON.parse(JSON.stringify(o)); delete c.exemplo; return c; };
+const upsert = (arr, item) => { const i = arr.findIndex(x => x.id === item.id); if (i >= 0) arr[i] = item; else arr.push(item); };
+const TABS = ['pacientes','programas','financeiro','metas'];
+
+const now0 = new Date();
+const state = {
+  tab:'pacientes', pacientes:[], atends:[], metas:[], programas:[], programa:'', meName:'', started:false,
+  decided:false, demo:false, kind:'boot',
+  finMonth: ymOf(now0), planMonth: ymOf(now0), selDay: isoDate(now0),
+  finFilter:'todos', finQuery:'', alFilter:'todos', alQuery:'', editAt:null, lastProg:''
+};
+let demoData = {pacientes:[], atends:[], metas:[], programas:[]};
+let sb = null, session = null;
+const sheet = {open:false, kind:'', id:null, opener:null, pesos:[], impl:''};
+
+const data = () => state.demo ? demoData : state;
+const progObjs = () => {
+  const D = data(), defs = (D.programas || []).slice(), names = new Set(defs.map(t => t.nome));
+  D.pacientes.forEach(s => { if (s.programa && !names.has(s.programa)) { names.add(s.programa); defs.push({id:null, nome:s.programa, dias:[], implicit:true}); } });
+  return defs.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+};
+const progNames = () => progObjs().map(t => t.nome);
+const inProg = s => !state.programa || s.programa === state.programa;
+const progColor = name => {
+  const ord = progObjs().sort((x, y) => (x.criado || 1e15) - (y.criado || 1e15) || x.nome.localeCompare(y.nome, 'pt-BR'));
+  const i = ord.findIndex(t => t.nome === name);
+  return PROG_COLORS[(i >= 0 ? i : progHue(name)) % PROG_COLORS.length];
+};
+const tdot = name => '<i class="tdot" style="--tc:'+progColor(name)+'"></i>';
+const nameOf = id => { const p = data().pacientes.find(x => x.id === id); return p ? p.nome : ''; };
+
+/* ---------- avisos ---------- */
+let toastTimer = 0;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 4200);
+}
+/* ---------- conta e dados (Supabase) ---------- */
+const nz = v => (v === '' || v === undefined || v === null) ? null : v;
+const nn = v => { if (v === '' || v === undefined || v === null) return null; const n = +v; return isFinite(n) ? n : null; };
+const blank = v => v == null ? '' : v;
+const MAP = {
+  pacientes:{
+    to: s => ({id:s.id, nome:s.nome, programa:nz(s.programa), objetivo:nz(s.objetivo), nasc:nz(s.nasc), tel:nz(s.tel), email:nz(s.email), altura:nn(s.altura), peso_inicial:nn(s.pesoInicial), pesos:s.pesos || [], restricoes:nz(s.restricoes), obs:nz(s.obs), valor:+s.valor || 0, venc:Math.floor(+s.venc) || 5, inicio:nz(s.inicio), ativo:s.ativo !== false, pay:s.pay || {}}),
+    from: r => ({id:r.id, nome:r.nome, programa:blank(r.programa), objetivo:blank(r.objetivo), nasc:blank(r.nasc), tel:blank(r.tel), email:blank(r.email), altura:r.altura == null ? '' : +r.altura, pesoInicial:r.peso_inicial == null ? '' : +r.peso_inicial, pesos:r.pesos || [], restricoes:blank(r.restricoes), obs:blank(r.obs), valor:+r.valor || 0, venc:r.venc, inicio:blank(r.inicio), ativo:r.ativo !== false, pay:r.pay || {}, criado:Date.parse(r.criado_em) || 0})
+  },
+  programas:{
+    to: t => ({id:t.id, nome:t.nome, dias:progDias(t), hora:nz(t.hora), fim:nz(t.fim), local:nz(t.local), obs:nz(t.obs)}),
+    from: r => ({id:r.id, nome:r.nome, dias:r.dias || [], hora:blank(r.hora), fim:blank(r.fim), local:blank(r.local), obs:blank(r.obs), criado:Date.parse(r.criado_em) || 0})
+  },
+  metas:{
+    to: m => ({id:m.id, titulo:m.titulo, cat:m.cat || 'pessoal', data:m.date, feita:!!m.feita, feita_em:nz(m.feitaEm), alvo:+m.alvo || 0, atual:+m.atual || 0, unidade:nz(m.unidade), paciente_id:nz(m.paciente), obs:nz(m.obs)}),
+    from: r => ({id:r.id, titulo:r.titulo, cat:r.cat, date:r.data, feita:!!r.feita, feitaEm:blank(r.feita_em), alvo:+r.alvo || 0, atual:+r.atual || 0, unidade:blank(r.unidade), paciente:blank(r.paciente_id), obs:blank(r.obs), criado:Date.parse(r.criado_em) || 0})
+  },
+  atendimentos:{
+    to: l => ({id:l.id, data:l.date, programa:nz(l.programa), paciente_id:nz(l.paciente), assunto:l.assunto, conduta:nz(l.conduta), retorno:nz(l.retorno)}),
+    from: r => ({id:r.id, date:r.data, programa:blank(r.programa), paciente:blank(r.paciente_id), assunto:r.assunto, conduta:blank(r.conduta), retorno:blank(r.retorno), criado:Date.parse(r.criado_em) || 0})
+  }
+};
+
+function errMsg(e){
+  const c = e && (e.code || e.status), m = String((e && e.message) || '');
+  if (c === '42501' || c === 403) return 'Você não tem permissão para salvar isso.';
+  if (c === 401 || /jwt/i.test(m)) return 'Sua sessão expirou. Entre de novo.';
+  if (/failed to fetch|network|load failed/i.test(m)) return 'Sem conexão. Confira a internet e tente de novo.';
+  if (c === '23503') return 'Esse registro depende de um paciente que não existe mais.';
+  return 'Não foi possível salvar agora. Tente de novo.';
+}
+
+async function fetchAll(table){
+  const out = [], size = 1000;
+  for (let from = 0; ; from += size) {
+    const r = await sb.from(table).select('*').order('criado_em', {ascending:true}).order('id', {ascending:true}).range(from, from + size - 1);
+    if (r.error) throw r.error;
+    out.push.apply(out, r.data);
+    if (r.data.length < size) break;
+  }
+  return out;
+}
+async function loadAll(){
+  const res = await Promise.all([fetchAll('pacientes'), fetchAll('programas'), fetchAll('metas'), fetchAll('atendimentos'), sb.from('perfil').select('iniciou').maybeSingle()]);
+  if (res[4].error) throw res[4].error;
+  state.pacientes = res[0].map(MAP.pacientes.from);
+  state.programas = res[1].map(MAP.programas.from);
+  state.metas = res[2].map(MAP.metas.from);
+  state.atends = res[3].map(MAP.atendimentos.from);
+  state.started = !!(res[4].data && res[4].data.iniciou);
+  lastSync = Date.now();
+}
+let lastSync = 0, pending = 0, chain = Promise.resolve();
+async function dbUpsert(table, row){ const r = await sb.from(table).upsert(row); if (r.error) throw r.error; }
+async function dbDelete(table, id){ const r = await sb.from(table).delete().eq('id', id); if (r.error) throw r.error; }
+
+/* atualiza a tela na hora e grava no Supabase em fila; se falhar, recarrega o que está salvo */
+function persist(apply, remote){
+  apply(); render();
+  pending++;
+  chain = chain.then(remote).catch(async e => {
+    console.error(e); toast(errMsg(e));
+    try { await loadAll(); render(); } catch(x){ console.error(x); }
+  }).then(() => { pending--; });
+  return chain;
+}
+
+function settle(){
+  if (!state.decided) {
+    state.decided = true;
+    state.demo = !state.started && !state.pacientes.length && !state.atends.length && !state.metas.length && !state.programas.length;
+    if (state.demo) demoData = makeDemo();
+  }
+  render();
+}
+
+async function startCloud(){
+  if (!session || !sb || authState.recovering) return;
+  state.kind = 'cloud'; state.decided = false; state.demo = false;
+  const u = session.user, md = u.user_metadata || {};
+  state.meName = md.nome || String(u.email || '').split('@')[0];
+  hideAuth(); render();
+  try { await loadAll(); }
+  catch(e){ console.error(e); showAuth('error'); return; }
+  settle();
+}
+function resetState(){
+  state.pacientes = []; state.atends = []; state.metas = []; state.programas = [];
+  state.programa = ''; state.started = false; state.decided = false; state.demo = false; state.meName = ''; state.kind = 'boot';
+  demoData = {pacientes:[], atends:[], metas:[], programas:[]};
+  closeSheet(); resetLessonForm(); render();
+}
+
+const act = {
+  savePaciente(s){ if (state.demo) { upsert(demoData.pacientes, s); render(); return Promise.resolve(); } return persist(() => upsert(state.pacientes, s), () => dbUpsert('pacientes', MAP.pacientes.to(s))); },
+  delPaciente(i){
+    if (state.demo) { demoData.pacientes = demoData.pacientes.filter(x => x.id !== i); render(); return Promise.resolve(); }
+    return persist(() => {
+      state.pacientes = state.pacientes.filter(x => x.id !== i);
+      state.metas.forEach(m => { if (m.paciente === i) m.paciente = ''; });
+      state.atends.forEach(l => { if (l.paciente === i) l.paciente = ''; });
+    }, () => dbDelete('pacientes', i));
+  },
+  saveAtend(l){ if (state.demo) { upsert(demoData.atends, l); render(); return Promise.resolve(); } return persist(() => upsert(state.atends, l), () => dbUpsert('atendimentos', MAP.atendimentos.to(l))); },
+  delAtend(i){ if (state.demo) { demoData.atends = demoData.atends.filter(x => x.id !== i); render(); return Promise.resolve(); } return persist(() => { state.atends = state.atends.filter(x => x.id !== i); }, () => dbDelete('atendimentos', i)); },
+  saveMeta(e){ if (state.demo) { upsert(demoData.metas, e); render(); return Promise.resolve(); } return persist(() => upsert(state.metas, e), () => dbUpsert('metas', MAP.metas.to(e))); },
+  delMeta(i){ if (state.demo) { demoData.metas = demoData.metas.filter(x => x.id !== i); render(); return Promise.resolve(); } return persist(() => { state.metas = state.metas.filter(x => x.id !== i); }, () => dbDelete('metas', i)); },
+  async savePrograma(t, oldName){
+    if (state.demo) upsert(demoData.programas, t);
+    else await persist(() => upsert(state.programas, t), () => dbUpsert('programas', MAP.programas.to(t)));
+    if (oldName && oldName !== t.nome) {
+      const D = data();
+      if (state.programa === oldName) state.programa = t.nome;
+      for (const x of D.pacientes.filter(q => q.programa === oldName)) await act.savePaciente(Object.assign({}, x, {programa:t.nome}));
+      for (const l of D.atends.filter(q => q.programa === oldName)) await act.saveAtend(Object.assign({}, l, {programa:t.nome}));
+    }
+    render();
+  },
+  async delPrograma(t){
+    const D = data();
+    if (state.programa === t.nome) state.programa = '';
+    for (const x of D.pacientes.filter(q => q.programa === t.nome)) await act.savePaciente(Object.assign({}, x, {programa:''}));
+    if (state.demo) demoData.programas = demoData.programas.filter(x => x.id !== t.id);
+    else await persist(() => { state.programas = state.programas.filter(x => x.id !== t.id); }, () => dbDelete('programas', t.id));
+    render();
+  }
+};
+
+async function exitDemo(){
+  if (!sb || !session) return;
+  state.demo = false; demoData = {pacientes:[], atends:[], metas:[], programas:[]};
+  closeSheet(); render();
+  try {
+    const r = await sb.from('perfil').upsert({user_id:session.user.id, iniciou:true});
+    if (r.error) throw r.error;
+    state.started = true;
+  } catch(e){ console.error(e); toast(errMsg(e)); }
+}
+
+/* ---------- login e cadastro ---------- */
+const BRAND_SVG = '<svg width="40" height="40" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#f4a6b8"/><path d="M16 9c5-1 8 2 7.4 6.4C22.8 20 19 23.4 16 24c-3-.6-6.8-4-7.4-8.6C8 11 11 8 16 9Z" fill="#f2607d" stroke="#4a2433" stroke-width="1.6" stroke-linejoin="round"/><path d="M16 9.4c-1.6-2-3.8-2.2-5-1.2 1.4 1.4 3.2 1.8 5 1.2Zm0 0c1.6-2 3.8-2.2 5-1.2-1.4 1.4-3.2 1.8-5 1.2Z" fill="#6bbf6a" stroke="#4a2433" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+const authState = {mode:'loading', email:'', busy:false, recovering:false};
+function authField(id, label, type, attrs, val){
+  return '<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" type="'+type+'" value="'+esc(val || '')+'" '+attrs+'></div>';
+}
+function renderAuth(){
+  const m = authState.mode, host = $('#auth'), msg = '<p class="auth-msg" id="au-msg" role="alert"></p>';
+  let body = '';
+  if (m === 'loading') body = '<h1>Abrindo…</h1><p class="hint">Carregando o seu caderno.</p>';
+  else if (m === 'config') body = '<h1>Falta configurar</h1><p class="hint">Abra o arquivo index.html, procure o bloco CONFIGURAÇÃO no começo e cole a Project URL e a chave anon ou publishable do seu projeto Supabase.</p>';
+  else if (m === 'secretkey') body = '<h1>Chave errada</h1><p class="hint">A chave colada no index.html é a chave secreta (service_role). Ela dá acesso total aos dados e nunca pode ficar no código do site. Troque pela chave anon ou publishable.</p>';
+  else if (m === 'nolib') body = '<h1>Sem conexão</h1><p class="hint">Não foi possível carregar a biblioteca de login. Confira a internet e recarregue a página.</p>';
+  else if (m === 'error') body = '<h1>Não deu para carregar</h1><p class="hint">Não foi possível buscar seus dados. Confira a conexão e tente de novo.</p><div class="form-acts"><button type="button" class="btn" data-act="auth-retry">Tentar de novo</button><button type="button" class="btn ghost" data-act="logout">Sair</button></div>';
+  else if (m === 'login') body = '<h1>Entrar</h1><form id="auth-login" novalidate>'+authField('au-email','E-mail','email','autocomplete="email" inputmode="email" autocapitalize="none" maxlength="160"', authState.email)+authField('au-pass','Senha','password','autocomplete="current-password" maxlength="100"','')+msg+'<button type="submit" class="btn" id="au-go">Entrar</button></form><div class="auth-links"><button type="button" class="link" data-act="auth-mode" data-mode="signup">Criar conta</button><button type="button" class="link" data-act="auth-mode" data-mode="forgot">Esqueci minha senha</button></div>';
+  else if (m === 'signup') body = '<h1>Criar conta</h1><form id="auth-signup" novalidate>'+authField('au-nome','Seu nome','text','autocomplete="name" maxlength="80"','')+authField('au-email','E-mail','email','autocomplete="email" inputmode="email" autocapitalize="none" maxlength="160"', authState.email)+authField('au-pass','Senha (mínimo 8 caracteres)','password','autocomplete="new-password" maxlength="100"','')+'<label class="check"><input id="au-lgpd" type="checkbox"><span>Sou a profissional responsável pelos dados dos pacientes que vou cadastrar e tenho autorização deles para registrá-los (LGPD).</span></label>'+msg+'<button type="submit" class="btn" id="au-go">Criar conta</button></form><div class="auth-links"><button type="button" class="link" data-act="auth-mode" data-mode="login">Já tenho conta</button></div>';
+  else if (m === 'forgot') body = '<h1>Recuperar senha</h1><p class="hint">Informe o e-mail da conta. Enviaremos um link para criar uma nova senha.</p><form id="auth-forgot" novalidate>'+authField('au-email','E-mail','email','autocomplete="email" inputmode="email" autocapitalize="none" maxlength="160"', authState.email)+msg+'<button type="submit" class="btn" id="au-go">Enviar link</button></form><div class="auth-links"><button type="button" class="link" data-act="auth-mode" data-mode="login">Voltar</button></div>';
+  else if (m === 'recovery') body = '<h1>Nova senha</h1><form id="auth-recovery" novalidate>'+authField('au-pass','Nova senha (mínimo 8 caracteres)','password','autocomplete="new-password" maxlength="100"','')+msg+'<button type="submit" class="btn" id="au-go">Salvar senha</button></form>';
+  host.innerHTML = '<div class="card auth-card"><div class="auth-brand">'+BRAND_SVG+'<div class="brand-t"><b>Caderno da Nutri</b><small>pacientes · metas · consultório</small></div></div>'+body+'</div>';
+}
+function showAuth(mode){
+  const cur = $('#au-email'); if (cur) authState.email = cur.value.trim();
+  authState.mode = mode; renderAuth();
+  $('#auth').hidden = false; document.body.style.overflow = 'hidden';
+  const f = $('#au-email') || $('#au-pass'); if (f && mode !== 'loading') { try { f.focus({preventScroll:true}); } catch(e){} }
+}
+function hideAuth(){ $('#auth').hidden = true; document.body.style.overflow = sheet.open ? 'hidden' : ''; }
+function authMsg(text, kind){ const el = $('#au-msg'); if (el) { el.textContent = text || ''; el.className = 'auth-msg '+(kind || 'err'); } }
+function authErr(e){
+  const m = String((e && e.message) || '');
+  if (/invalid login/i.test(m)) return 'E-mail ou senha incorretos.';
+  if (/email not confirmed/i.test(m)) return 'Confirme seu e-mail pelo link que enviamos antes de entrar.';
+  if (/already registered|already been registered/i.test(m)) return 'Este e-mail já tem conta. Entre ou recupere a senha.';
+  if (/password should be|weak/i.test(m)) return 'Escolha uma senha mais forte, com pelo menos 8 caracteres.';
+  if (/rate limit|too many|security purposes/i.test(m)) return 'Muitas tentativas. Espere alguns minutos e tente de novo.';
+  if (/failed to fetch|network|load failed/i.test(m)) return 'Sem conexão. Confira a internet.';
+  return 'Não foi possível concluir. Tente de novo.';
+}
+async function authSubmit(id){
+  if (authState.busy || !sb) return;
+  const val = s => { const el = $(s); return el ? el.value : ''; };
+  const email = val('#au-email').trim(), pass = val('#au-pass');
+  const okMail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (id !== 'auth-recovery') { authState.email = email; if (!okMail) { authMsg('Informe um e-mail válido.'); return; } }
+  if (id !== 'auth-forgot' && !pass) { authMsg('Informe a senha.'); return; }
+  if ((id === 'auth-signup' || id === 'auth-recovery') && pass.length < 8) { authMsg('A senha precisa ter pelo menos 8 caracteres.'); return; }
+  if (id === 'auth-signup' && !$('#au-lgpd').checked) { authMsg('Marque a declaração sobre os dados dos pacientes para criar a conta.'); return; }
+  authState.busy = true; const go = $('#au-go'); if (go) go.disabled = true; authMsg('');
+  const redirect = location.origin + location.pathname;
+  try {
+    if (id === 'auth-login') {
+      const r = await sb.auth.signInWithPassword({email:email, password:pass});
+      if (r.error) authMsg(authErr(r.error));
+    } else if (id === 'auth-signup') {
+      const r = await sb.auth.signUp({email:email, password:pass, options:{emailRedirectTo:redirect, data:{nome:val('#au-nome').trim(), aceite_lgpd:new Date().toISOString()}}});
+      if (r.error) authMsg(authErr(r.error));
+      else if (!r.data.session) authMsg('Conta criada. Enviamos um e-mail para confirmar o endereço.', 'ok');
+    } else if (id === 'auth-forgot') {
+      const r = await sb.auth.resetPasswordForEmail(email, {redirectTo:redirect});
+      if (r.error) authMsg(authErr(r.error)); else authMsg('Se esse e-mail tiver conta, enviamos um link para criar uma nova senha.', 'ok');
+    } else if (id === 'auth-recovery') {
+      const r = await sb.auth.updateUser({password:pass});
+      if (r.error) authMsg(authErr(r.error));
+      else { authState.recovering = false; startCloud(); }
+    }
+  } catch(e){ console.error(e); authMsg(authErr(e)); }
+  authState.busy = false; const g2 = $('#au-go'); if (g2) g2.disabled = false;
+}
+async function logout(){
+  try { await sb.auth.signOut(); } catch(e){ console.error(e); toast('Não foi possível sair agora.'); }
+}
+
+/* ---------- exemplos ---------- */
+function makeDemo(){
+  const t = new Date(), cur = ymOf(t), nDays = daysIn(cur);
+  const inMonth = n => cur+'-'+pad(Math.min(Math.max(t.getDate()+n, 1), nDays));
+  const mkS = (nome, programa, objetivo, tel, email, altura, pi, pesos, restricoes, valor, venc, skip, nasc) => {
+    const pay = {};
+    for (let i = 1; i <= 8; i++) { const m = addMonths(cur, -i); if (skip.indexOf(i) < 0) pay[m] = {v:valor, d:m+'-'+pad(Math.min(venc, daysIn(m)))}; }
+    return {id:'ex-'+uid(), nome, programa, objetivo, tel, email, altura, pesoInicial:pi, pesos, restricoes, obs:'', valor, venc, nasc, inicio:addMonths(cur,-8), ativo:true, pay, exemplo:true, criado:Date.now()};
+  };
+  const pw = (arr) => arr.map((k, i) => ({d:addMonths(cur, -(arr.length - i))+'-10', kg:k}));
+  const s = [
+    mkS('Camila Duarte','Emagrecimento','emagrecimento','(21) 99000-0101','camila@exemplo.com',165,78.4,pw([76.9,75.2,74.1,72.8]),'Intolerância à lactose.',280,5,[],'1991-03-12'),
+    mkS('Renata Alves','Emagrecimento','reeducacao','(21) 99000-0102','',158,69.0,pw([68.2,67.5]),'',280,10,[2],'1986-07-02'),
+    mkS('Bianca Lopes','Esportiva','ganho','(21) 99000-0103','bianca@exemplo.com',170,58.5,pw([59.4,60.3,61.0]),'Alergia a amendoim.',320,10,[],'1998-11-23'),
+    mkS('Juliana Prado','Gestantes','gestante','(21) 99000-0104','',162,64.0,pw([65.8,67.0]),'Evitar peixes crus e queijos não pasteurizados.',300,20,[1,2],'1993-01-30'),
+    mkS('Fernanda Rocha','Esportiva','esportiva','(21) 99000-0105','fernanda@exemplo.com',168,62.2,pw([62.0,61.6]),'',320,28,[],'1995-09-14'),
+    mkS('Marina Teixeira','Emagrecimento','clinica','(21) 99000-0106','',160,82.5,pw([81.0,79.4]),'',0,5,[],'1980-05-08')
+  ];
+  [0,1,5].forEach(i => { s[i].pay[cur] = {v:s[i].valor, d:cur+'-'+pad(Math.min(s[i].venc, daysIn(cur)))}; });
+  const assuntos = ['Retorno e ajuste do plano','Primeira consulta','Revisão de exames','Retorno: adesão ao plano','Orientação de lanches'];
+  const notas = ['Boa adesão. Ajustei porções do jantar e reforcei a ingestão de água.','Anamnese completa, recordatório de 24 horas e metas combinadas.','Exames em dia. Mantida a suplementação.','Relatou dificuldade nos fins de semana. Combinamos opções práticas.','Montamos uma lista de lanches para levar ao trabalho.'];
+  const ats = []; let k = 0;
+  for (let d = 1; d <= Math.min(t.getDate(), nDays); d++) {
+    const iso = cur+'-'+pad(d), wd = fromISO(iso).getDay();
+    if (wd === 2 || wd === 4) { const i = k++ % assuntos.length, p = s[i % s.length]; ats.push({id:'ex-'+uid(), date:iso, programa:p.programa, paciente:p.id, assunto:assuntos[i], conduta:notas[i], retorno:i % 2 ? 'em 15 dias' : '', criado:d, exemplo:true}); }
+  }
+  const mk = (titulo, cat, date, feita, extra) => Object.assign({id:'ex-'+uid(), titulo, cat, date, feita, feitaEm: feita ? date : '', alvo:0, atual:0, unidade:'', paciente:'', obs:'', criado:Date.now()+Math.random(), exemplo:true}, extra || {});
+  const metas = [
+    mk('Atender 40 consultas no mês','pacientes',cur+'-'+pad(nDays),false,{alvo:40, atual:26, unidade:'consultas'}),
+    mk('Fechar 5 novos pacientes','pacientes',cur+'-'+pad(nDays),false,{alvo:5, atual:3, unidade:'pacientes'}),
+    mk('Publicar 8 posts no Instagram','conteudo',inMonth(-2),true,{alvo:8, atual:8, unidade:'posts'}),
+    mk('Atualizar o plano alimentar da Camila','pacientes',inMonth(-4),true,{paciente:s[0].id, obs:'Ajustar café da manhã sem lactose.'}),
+    mk('Enviar relatório de evolução da Renata','pacientes',inMonth(-3),false,{paciente:s[1].id}),
+    mk('Fechar parceria com a academia do bairro','negocio',inMonth(4),false,{obs:'Levar tabela de planos e proposta de palestra.'}),
+    mk('Estudar o módulo de nutrição esportiva','estudo',inMonth(9),false,{alvo:6, atual:2, unidade:'aulas'}),
+    mk('Revisar os valores das consultas','negocio',inMonth(6),false),
+    mk('Reservar uma tarde para descansar','pessoal',inMonth(2),false)
+  ];
+  const pr = [
+    {id:'ex-'+uid(), nome:'Emagrecimento', dias:[2,4], hora:'09:00', fim:'12:00', local:'Consultório', obs:'', criado:1, exemplo:true},
+    {id:'ex-'+uid(), nome:'Esportiva', dias:[1,3], hora:'14:00', fim:'18:00', local:'Consultório', obs:'', criado:2, exemplo:true},
+    {id:'ex-'+uid(), nome:'Gestantes', dias:[5], hora:'09:00', fim:'11:30', local:'Online', obs:'', criado:3, exemplo:true}
+  ];
+  return {pacientes:s, atends:ats, metas:metas, programas:pr};
+}
+
+/* ---------- renderização ---------- */
+function openMetas(){ return data().metas.filter(m => !m.feita).sort(cmpMeta); }
+
+function renderTbar(){
+  const bar = $('#tbar'), list = progObjs(), D = data();
+  bar.hidden = !state.decided || list.length === 0;
+  if (bar.hidden) return;
+  if (state.programa && !list.some(t => t.nome === state.programa)) state.programa = '';
+  $('#tchips').innerHTML = '<button type="button" class="tchip" data-act="set-prog" data-name="" data-key="tc:" aria-pressed="'+(!state.programa)+'">Todos os programas</button>'+
+    list.map(t => '<button type="button" class="tchip" data-act="set-prog" data-name="'+esc(t.nome)+'" data-key="tc:'+esc(t.nome)+'" aria-pressed="'+(state.programa === t.nome)+'">'+tdot(t.nome)+esc(t.nome)+'</button>').join('');
+  const info = $('#tinfo'), t = list.find(x => x.nome === state.programa);
+  if (!t) { info.hidden = true; info.innerHTML = ''; return; }
+  const n = D.pacientes.filter(s => s.programa === t.nome && s.ativo !== false).length, when = progWhen(t);
+  info.hidden = false;
+  info.innerHTML = '<span>'+tdot(t.nome)+' <b>'+esc(t.nome)+'</b></span><span>'+(when ? esc(when) : 'Dias ainda não definidos')+'</span>'+(t.local ? '<span>'+esc(t.local)+'</span>' : '')+'<span>'+n+(n === 1 ? ' paciente ativo' : ' pacientes ativos')+'</span>'+
+    '<button type="button" class="btn ghost sm" data-act="edit-prog" data-id="'+esc(t.id || '')+'" data-name="'+esc(t.nome)+'" data-key="tinfo-edit">'+(t.id ? 'Editar programa' : 'Definir dias')+'</button>';
+}
+
+function renderChrome(){
+  const n = $('#store-note');
+  if (!state.decided) n.textContent = 'Carregando…';
+  else if (state.demo) n.textContent = 'Dados de exemplo';
+  else if (state.kind === 'cloud') n.textContent = (state.meName ? 'Olá, '+state.meName.split(' ')[0]+' · ' : '')+'seus dados ficam privados na sua conta';
+  else n.textContent = '';
+  $('#demo-banner').hidden = !state.demo;
+  TABS.forEach(t => {
+    const b = $('#tab-'+t); b.setAttribute('aria-selected', String(state.tab === t)); b.tabIndex = state.tab === t ? 0 : -1;
+    $('#panel-'+t).hidden = state.tab !== t;
+  });
+  $('#logout-btn').hidden = state.kind !== 'cloud';
+  renderHero();
+}
+
+function renderHero(){
+  const tab = state.tab, titles = {pacientes:'Seus pacientes.', programas:'Seus programas.', financeiro:'Consultório em dia.', metas:'Mês com metas.'};
+  $('#hero-h1').textContent = titles[tab];
+  $('#hero-eyebrow').textContent = {pacientes:'Pacientes · Nutrição', programas:'Programas · Nutrição', financeiro:'Finanças · Nutrição', metas:'Metas · Nutrição'}[tab];
+  const cta = $('#hero-cta');
+  const cfg = {pacientes:['Novo paciente','new-paciente'], programas:['Novo programa','new-prog'], financeiro:['Ver pacientes','go-pacientes'], metas:['Nova meta','new-meta']}[tab];
+  cta.innerHTML = cfg[0]+' '+ARROW; cta.dataset.target = cfg[1];
+  let sub = 'Pacientes, programas, finanças, metas e atendimentos do consultório em um só lugar.';
+  if (!state.decided) sub = 'Carregando o seu caderno…';
+  else {
+    const D = data(), today = isoDate(new Date()), ymNow = ymOf(new Date()), parts = [];
+    const S = D.pacientes.filter(inProg), ativos = S.filter(s => s.ativo !== false);
+    if (state.programa && tab !== 'programas' && tab !== 'metas') parts.push(state.programa);
+    if (tab === 'pacientes') {
+      const care = ativos.filter(s => s.restricoes && String(s.restricoes).trim()).length;
+      if (ativos.length) { parts.push(ativos.length+(ativos.length === 1 ? ' paciente ativo' : ' pacientes ativos')); if (care) parts.push(care+(care === 1 ? ' com restrição alimentar' : ' com restrições alimentares')); }
+    } else if (tab === 'programas') {
+      const n = progObjs().length;
+      if (n) parts.push(n+(n === 1 ? ' programa' : ' programas')+' e '+D.pacientes.filter(s => s.ativo !== false).length+' pacientes ativos');
+    } else if (tab === 'financeiro') {
+      if (S.length) {
+        const t = totalsFor(rowsFor(S, ymNow), ymNow, today);
+        parts.push(t.nLate ? t.nLate+(t.nLate === 1 ? ' acompanhamento em atraso' : ' acompanhamentos em atraso')+' neste mês' : 'Nenhum acompanhamento em atraso neste mês');
+      }
+    } else {
+      const mm = D.metas.filter(m => m.date.indexOf(ymNow) === 0);
+      if (mm.length) { const t = metaTotals(mm, today); parts.push(t.feitas+' de '+t.n+(t.n === 1 ? ' meta feita' : ' metas feitas')+' neste mês'); }
+      const up = openMetas().filter(m => m.date >= today)[0];
+      if (up) parts.push('Próxima: '+up.titulo+', '+untilLabel(daysUntil(up.date, today)));
+    }
+    if (parts.length) sub = parts.join('. ')+'.';
+  }
+  $('#hero-sub').textContent = sub;
+}
+
+function rowHTML(s, ym, today){
+  const st = statusOf(s, ym, today), p = s.pay && s.pay[ym];
+  const pillTxt = {pago:'Pago', pendente:'A vencer', atrasado:'Em atraso', isento:'Isento'}[st];
+  const meta = [s.programa ? '<span class="tl">'+tdot(s.programa)+esc(s.programa)+'</span>' : 'Sem programa'];
+  meta.push(+s.valor > 0 ? BRL.format(+s.valor) : 'Isento', 'vence dia '+Math.min(Math.max(Math.floor(+s.venc)||5,1), daysIn(ym)));
+  if (p && p.d) meta.push('pago em '+p.d.slice(8,10)+'/'+p.d.slice(5,7));
+  const k = esc(s.id);
+  const btn = st === 'pago'
+    ? '<button type="button" class="btn ghost sm" data-act="toggle-pay" data-id="'+k+'" data-key="pay:'+k+'">Desfazer</button>'
+    : (st === 'isento' ? '' : '<button type="button" class="btn sm" data-act="toggle-pay" data-id="'+k+'" data-key="pay:'+k+'">Receber</button>');
+  const ring = s.programa ? ' style="--ring:'+progColor(s.programa)+'"' : '';
+  return '<div class="row">'+
+    '<button type="button" class="who" data-act="open-paciente" data-id="'+k+'" data-key="open:'+k+'" aria-label="Abrir ficha de '+esc(s.nome)+'">'+
+      '<span class="avatar"'+ring+' aria-hidden="true">'+esc(initials(s.nome))+'</span>'+
+      '<span class="who-txt"><strong>'+esc(s.nome)+'</strong><span class="meta">'+meta.map((m, i) => i === 0 ? m : '<span>· '+m+'</span>').join('')+'</span></span>'+
+    '</button>'+
+    '<div class="acts"><span class="pill '+st+'">'+pillTxt+'</span>'+btn+'</div>'+
+  '</div>';
+}
+
+function pacienteRowHTML(s, ym, today){
+  const st = statusOf(s, ym, today);
+  const pillTxt = {pago:'Pagou', pendente:'A vencer', atrasado:'Em atraso', isento:'Isento'}[st];
+  const k = esc(s.id), age = ageOf(s.nasc, today);
+  const ring = s.programa ? ' style="--ring:'+progColor(s.programa)+'"' : '';
+  const meta = [s.programa ? '<span class="tl">'+tdot(s.programa)+esc(s.programa)+'</span>' : 'Sem programa'];
+  if (s.objetivo && OBJ[s.objetivo]) meta.push(esc(OBJ[s.objetivo]));
+  if (age != null) meta.push(age+' anos');
+  if (s.ativo === false) meta.push('em pausa');
+  const info = [];
+  const kg = lastPeso(s), dl = pesoDelta(s), imc = imcOf(kg, s.altura);
+  if (s.tel) info.push('<span>Tel.: <b>'+esc(s.tel)+'</b></span>');
+  if (s.email) info.push('<span>E-mail: <b>'+esc(s.email)+'</b></span>');
+  if (kg) info.push('<span>Peso: <b>'+fmtKg(kg)+' kg</b>'+(dl != null ? ' ('+fmtDelta(dl)+')' : '')+'</span>');
+  if (+s.altura > 0) info.push('<span>Altura: <b>'+Math.round(+s.altura)+' cm</b></span>');
+  if (imc) info.push('<span>IMC: <b>'+fmtKg(imc)+'</b></span>');
+  if (s.nasc) info.push('<span>Nasc.: <b>'+fmtBR(s.nasc)+'</b></span>');
+  return '<div class="arow">'+
+    '<button type="button" class="who" data-act="open-paciente" data-id="'+k+'" data-key="aopen:'+k+'" aria-label="Abrir ficha de '+esc(s.nome)+'">'+
+      '<span class="avatar"'+ring+' aria-hidden="true">'+esc(initials(s.nome))+'</span>'+
+      '<span class="who-txt"><strong>'+esc(s.nome)+'</strong><span class="meta">'+meta.map((m, i) => i === 0 ? m : '<span>· '+m+'</span>').join('')+'</span>'+
+      (info.length ? '<span class="info">'+info.join('')+'</span>' : '')+
+      (s.restricoes && String(s.restricoes).trim() ? '<span class="care">Restrições: '+esc(s.restricoes)+'</span>' : '')+
+      '</span>'+
+    '</button>'+
+    '<div class="acts"><span class="pill '+st+'" title="Acompanhamento de '+esc(monthLabel(ym).toLowerCase())+'">'+pillTxt+'</span></div>'+
+  '</div>';
+}
+
+function renderPacientes(){
+  const D = data(), ym = ymOf(new Date()), today = isoDate(new Date());
+  const q = fold(state.alQuery).trim();
+  const base = D.pacientes.filter(s => inProg(s) && (!q || fold(s.nome+' '+(s.tel||'')+' '+(s.email||'')).indexOf(q) >= 0));
+  const flt = {todos:() => true, pago:s => statusOf(s, ym, today) === 'pago', aberto:s => ['pendente','atrasado'].indexOf(statusOf(s, ym, today)) >= 0, saude:s => !!(s.restricoes && String(s.restricoes).trim())};
+  const chips = [['todos','Todos'],['pago','Pagaram'],['aberto','Em aberto'],['saude','Com restrições']];
+  $('#al-chips').innerHTML = chips.map(c => '<button type="button" class="chip-btn" data-act="al-chip" data-f="'+c[0]+'" data-key="achip:'+c[0]+'" aria-pressed="'+(state.alFilter === c[0])+'">'+c[1]+'<span class="n">'+base.filter(flt[c[0]]).length+'</span></button>').join('');
+  $('#al-eyebrow').textContent = D.pacientes.length ? 'Situação de '+monthLabel(ym).toLowerCase() : 'Cadastro';
+  const rows = base.filter(flt[state.alFilter] || flt.todos).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  const host = $('#al-list');
+  if (!state.decided) host.innerHTML = '<div class="empty"><p>Carregando seus pacientes…</p></div>';
+  else if (!D.pacientes.length) host.innerHTML = '<div class="empty"><strong>Cadastre seu primeiro paciente</strong><p>Nome, objetivo, contato, peso e altura, restrições alimentares e a situação do acompanhamento ficam reunidos aqui.</p><button type="button" class="btn" data-act="new-paciente" data-key="new-al-empty">Novo paciente</button></div>';
+  else if (!rows.length) host.innerHTML = '<div class="empty"><p>Nenhum paciente neste filtro.</p></div>';
+  else host.innerHTML = rows.map(s => pacienteRowHTML(s, ym, today)).join('');
+}
+
+function renderFinance(){
+  const D = data(), ym = state.finMonth, today = isoDate(new Date());
+  $('#fin-label').textContent = monthLabel(ym);
+  const S = D.pacientes.filter(inProg), all = rowsFor(S, ym), t = totalsFor(all, ym, today);
+
+  $('#kpis').innerHTML =
+    '<div class="tile main"><div class="lbl">Recebido em '+MES[+ym.slice(5)-1]+'</div><div class="val">'+BRL.format(t.rec)+'</div>'+
+      '<div class="bar" role="img" aria-label="'+t.pct+'% do previsto recebido"><i style="width:'+t.pct+'%"></i></div>'+
+      '<div class="sub">'+(t.expected ? t.pct+'% dos '+BRL.format(t.expected)+' previstos' : 'Nenhum acompanhamento previsto')+'</div></div>'+
+    '<div class="tile"><div class="lbl">A vencer</div><div class="val">'+BRL.format(t.pend)+'</div><div class="sub">'+t.nPend+(t.nPend === 1 ? ' paciente' : ' pacientes')+'</div></div>'+
+    '<div class="tile"><div class="lbl">Em atraso</div><div class="val'+(t.nLate ? ' late' : '')+'">'+BRL.format(t.late)+'</div><div class="sub">'+t.nLate+(t.nLate === 1 ? ' paciente' : ' pacientes')+'</div></div>';
+
+  const months = []; for (let i = 5; i >= 0; i--) months.push(addMonths(ym, -i));
+  const vals = months.map(m => recByMonth(S, m)), max = Math.max.apply(null, vals.concat([1]));
+  $('#chart').innerHTML = '<div class="lbl">Recebido nos últimos 6 meses (R$)</div>'+
+    '<div class="bars" role="img" aria-label="Recebido por mês: '+months.map((m, i) => MES[+m.slice(5)-1]+' '+Math.round(vals[i])).join(', ')+'">'+
+    months.map((m, i) => '<div class="col'+(m === ym ? ' sel' : '')+'"><span class="v">'+shortMoney(vals[i])+'</span><span class="b" style="height:'+(vals[i] > 0 ? Math.max(3, Math.round(vals[i]/max*88)) : 2)+'px"></span><span class="m">'+MES[+m.slice(5)-1]+'</span></div>').join('')+'</div>';
+
+  const q = fold(state.finQuery).trim();
+  const base = all.filter(s => (!q || fold(s.nome).indexOf(q) >= 0));
+  const cnt = {todos:base.length, atrasado:0, pendente:0, pago:0};
+  base.forEach(s => { const st = statusOf(s, ym, today); if (cnt[st] != null) cnt[st]++; });
+  const chips = [['todos','Todos'],['atrasado','Em atraso'],['pendente','A vencer'],['pago','Pagos']];
+  $('#fin-chips').innerHTML = chips.map(c => '<button type="button" class="chip-btn" data-act="chip" data-f="'+c[0]+'" data-key="chip:'+c[0]+'" aria-pressed="'+(state.finFilter === c[0])+'">'+c[1]+'<span class="n">'+cnt[c[0]]+'</span></button>').join('');
+
+  const rank = {atrasado:0, pendente:1, isento:2, pago:3};
+  const rows = base.filter(s => state.finFilter === 'todos' || statusOf(s, ym, today) === state.finFilter)
+    .sort((a, b) => rank[statusOf(a, ym, today)] - rank[statusOf(b, ym, today)] || a.nome.localeCompare(b.nome, 'pt-BR'));
+  const host = $('#list');
+  if (!state.decided) host.innerHTML = '<div class="empty"><p>Carregando seus pacientes…</p></div>';
+  else if (!D.pacientes.length) host.innerHTML = '<div class="empty"><strong>Nenhum paciente cadastrado</strong><p>Cadastre os pacientes na aba Pacientes. O acompanhamento de cada mês aparece aqui para você marcar os pagamentos.</p><button type="button" class="btn" data-act="go-pacientes">Ir para pacientes</button></div>';
+  else if (!rows.length) host.innerHTML = '<div class="empty"><p>Nenhum paciente neste filtro.</p></div>';
+  else host.innerHTML = rows.map(s => rowHTML(s, ym, today)).join('');
+}
+
+function monthAtends(){
+  return data().atends.filter(l => l.date.indexOf(state.planMonth) === 0 && (!state.programa || l.programa === state.programa)).sort(cmpAtend);
+}
+function monthMetas(){ return data().metas.filter(m => m.date.indexOf(state.planMonth) === 0).sort(cmpMeta); }
+
+function renderProgramas(){
+  const D = data(), host = $('#tu-grid'), today = isoDate(new Date()), ym = ymOf(new Date());
+  if (!state.decided) { host.innerHTML = ''; return; }
+  const list = progObjs();
+  if (!list.length) { host.innerHTML = '<div class="card empty" style="grid-column:1/-1"><strong>Crie seu primeiro programa</strong><p>Programas agrupam pacientes com o mesmo foco, como Emagrecimento, Esportiva ou Gestantes. Defina os dias de atendimento para ver a grade no calendário e filtrar pacientes, finanças e atendimentos.</p><button type="button" class="btn" data-act="new-prog" data-key="new-tu-empty">Novo programa</button></div>'; return; }
+  host.innerHTML = list.map(t => {
+    const al = D.pacientes.filter(s => s.programa === t.nome && s.ativo !== false);
+    const tot = totalsFor(rowsFor(al, ym), ym, today), na = D.atends.filter(l => l.programa === t.nome && l.date.indexOf(ym) === 0).length;
+    const nx = nextSlotISO(t, today), when = progWhen(t), k = esc(t.nome);
+    return '<article class="tcard'+(state.programa === t.nome ? ' sel' : '')+'" style="--tc:'+progColor(t.nome)+'" aria-label="Programa '+k+'">'+
+      '<div class="tc-h">'+tdot(t.nome)+'<h3>'+k+'</h3></div>'+
+      '<p class="tc-when">'+(when ? esc(when) : 'Dias ainda não definidos')+'</p>'+
+      (t.local ? '<p class="tc-sub">'+esc(t.local)+'</p>' : '')+
+      (nx ? '<p class="tc-sub">Próximo atendimento: '+untilLabel(daysUntil(nx, today))+' · '+evDateShort(nx)+'</p>' : '')+
+      '<div class="tc-stats"><div><b>'+al.length+'</b><span>'+(al.length === 1 ? 'paciente' : 'pacientes')+'</span></div><div><b>'+tot.nPaid+'</b><span>pagaram</span></div><div><b>'+tot.nLate+'</b><span>em atraso</span></div></div>'+
+      '<p class="tc-sub">'+na+(na === 1 ? ' atendimento registrado' : ' atendimentos registrados')+' em '+MES[+ym.slice(5)-1]+'</p>'+
+      (t.obs ? '<p class="tc-sub">'+esc(t.obs)+'</p>' : '')+
+      '<div class="tc-acts"><button type="button" class="btn sm" data-act="go-prog-pacientes" data-name="'+k+'" data-key="tca:'+k+'">Ver pacientes</button>'+
+      '<button type="button" class="btn ghost sm" data-act="go-prog-plan" data-name="'+k+'" data-key="tcp:'+k+'">Calendário</button>'+
+      '<button type="button" class="btn ghost sm" data-act="edit-prog" data-id="'+esc(t.id || '')+'" data-name="'+k+'" data-key="tce:'+k+'">'+(t.id ? 'Editar' : 'Definir dias')+'</button></div>'+
+    '</article>';
+  }).join('');
+}
+
+/* metas: blocos reutilizados */
+const PILL = {feita:['pago','Feita'], aberta:['pendente','A fazer'], atrasada:['atrasado','Não feita']};
+function metaWhen(m, today){
+  const st = metaStatus(m, today);
+  if (st === 'feita') return m.feitaEm ? 'feita em '+m.feitaEm.slice(8,10)+'/'+m.feitaEm.slice(5,7) : 'feita';
+  if (st === 'atrasada') return 'prazo '+untilLabel(daysUntil(m.date, today));
+  return untilLabel(daysUntil(m.date, today));
+}
+function progressHTML(m, withSteps){
+  if (!(+m.alvo > 0)) return '';
+  const k = esc(m.id), pct = metaPct(m), u = m.unidade ? ' '+esc(m.unidade) : '';
+  return '<div class="goal-prog"><div class="line"><span><b>'+(+m.atual || 0)+' de '+(+m.alvo)+'</b>'+u+' · '+pct+'%</span>'+
+    (withSteps ? '<span class="stepper"><button type="button" class="icon-btn" data-act="meta-dec" data-id="'+k+'" data-key="md:'+k+'" aria-label="Diminuir 1">−</button><button type="button" class="icon-btn" data-act="meta-inc" data-id="'+k+'" data-key="mi:'+k+'" aria-label="Somar 1">+</button></span>' : '')+
+    '</div><div class="bar" role="img" aria-label="'+pct+'% da meta"><i style="width:'+pct+'%"></i></div></div>';
+}
+function goalHTML(m){
+  const today = isoDate(new Date()), st = metaStatus(m, today), k = esc(m.id), cat = catKey(m);
+  const pac = m.paciente ? nameOf(m.paciente) : '';
+  return '<article class="goal cat-'+cat+' m-'+st+'" aria-label="'+esc(m.titulo)+'">'+
+    '<div class="goal-h"><span class="tag-ev cat-'+cat+'">'+esc(CATS[cat])+'</span><span class="pill '+PILL[st][0]+'">'+PILL[st][1]+'</span></div>'+
+    '<h3>'+esc(m.titulo)+'</h3>'+
+    '<p class="goal-meta">Prazo: '+fmtBR(m.date)+' · '+metaWhen(m, today)+(pac ? ' · Paciente: '+esc(pac) : '')+'</p>'+
+    progressHTML(m, true)+
+    (m.obs ? '<p class="goal-note">'+esc(m.obs)+'</p>' : '')+
+    '<div class="goal-acts"><button type="button" class="btn sm'+(st === 'feita' ? ' ghost' : '')+'" data-act="toggle-meta" data-id="'+k+'" data-key="mt:'+k+'">'+(st === 'feita' ? 'Desfazer' : 'Marcar como feita')+'</button>'+
+    '<button type="button" class="btn ghost sm" data-act="edit-meta" data-id="'+k+'" data-key="me:'+k+'">Editar</button>'+
+    '<button type="button" class="btn danger sm" data-act="del-meta" data-id="'+k+'" data-key="md2:'+k+'">Excluir</button></div>'+
+  '</article>';
+}
+
+function renderUpcoming(){
+  const host = $('#ev-up'), today = isoDate(new Date());
+  if (!state.decided) { host.innerHTML = ''; return; }
+  const up = openMetas().slice(0, 4);
+  if (!up.length) {
+    host.innerHTML = '<div class="card empty" style="grid-column:1/-1"><strong>'+(data().metas.length ? 'Todas as metas estão feitas' : 'Nenhuma meta cadastrada')+'</strong><p>'+(data().metas.length ? 'Quando quiser, cadastre as metas do próximo período para acompanhar o que foi feito e o que ficou pendente.' : 'Cadastre o que você quer cumprir no mês: consultas, novos pacientes, conteúdo, estudos. Marque como feita ao concluir e veja o resumo no fim do mês.')+'</p><button type="button" class="btn" data-act="new-meta" data-key="newm-empty">Nova meta</button></div>';
+    return;
+  }
+  host.innerHTML = up.map(m => {
+    const st = metaStatus(m, today), k = esc(m.id), cat = catKey(m);
+    return '<button type="button" class="evcard cat-'+cat+'" data-act="open-meta" data-id="'+k+'" data-key="uc:'+k+'">'+
+      '<span class="evc-top"><span class="tag-ev cat-'+cat+'">'+esc(CATS[cat])+'</span><span class="pill '+PILL[st][0]+'">'+PILL[st][1]+'</span></span>'+
+      '<strong class="evc-t">'+esc(m.titulo)+'</strong>'+
+      '<span class="evc-m">'+evDateShort(m.date)+' · '+metaWhen(m, today)+'</span>'+
+      ((+m.alvo > 0) ? '<span class="evc-foot"><span>'+(+m.atual || 0)+' de '+(+m.alvo)+(m.unidade ? ' '+esc(m.unidade) : '')+'</span><span>'+metaPct(m)+'%</span></span><span class="bar"><i style="width:'+metaPct(m)+'%"></i></span>' : '')+
+    '</button>';
+  }).join('');
+}
+
+function renderPlanning(){
+  const D = data(), ym = state.planMonth, today = isoDate(new Date());
+  $('#plan-label').textContent = monthLabel(ym);
+  fillLessonSelects();
+  if (state.selDay.indexOf(ym) !== 0) state.selDay = (today.indexOf(ym) === 0) ? today : ym+'-01';
+  renderUpcoming();
+  const grade = state.programa ? progObjs().filter(t => t.nome === state.programa) : progObjs();
+  const ats = monthAtends(), byDay = {}, mByDay = {};
+  ats.forEach(l => { (byDay[l.date] = byDay[l.date] || []).push(l); });
+  const metas = monthMetas();
+  metas.forEach(m => { (mByDay[m.date] = mByDay[m.date] || []).push(m); });
+  $('#cal').innerHTML = monthGrid(ym).map(iso => {
+    if (!iso) return '<div></div>';
+    const li = byDay[iso] || [], mi = mByDay[iso] || [], n = li.length + mi.length, pl = progPlannedOn(grade, iso);
+    const parts = [];
+    if (mi.length) parts.push(mi.length+(mi.length === 1 ? ' meta' : ' metas'));
+    if (li.length) parts.push(li.length+(li.length === 1 ? ' atendimento registrado' : ' atendimentos registrados'));
+    if (pl.length) parts.push('atendimento previsto: '+pl.map(t => t.nome).join(', '));
+    const label = fromISO(iso).toLocaleDateString('pt-BR',{day:'numeric',month:'long'})+', '+(parts.length ? parts.join(', ') : 'sem registros');
+    const chips = mi.map(m => '<span class="chip '+metaStatus(m, today)+'">'+esc(m.titulo)+'</span>').concat(li.map(l => '<span class="chip" style="background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--line-strong)">'+esc(l.assunto)+'</span>'));
+    return '<button type="button" class="day'+(iso === today ? ' today' : '')+(iso === state.selDay ? ' sel' : '')+'" data-act="day" data-iso="'+iso+'" data-key="day:'+iso+'" aria-pressed="'+(iso === state.selDay)+'" aria-label="'+esc(label)+'">'+
+      '<span class="n">'+(+iso.slice(8))+'</span>'+
+      (n ? chips.slice(0,2).join('')+(n > 2 ? '<span class="more">+'+(n-2)+'</span>' : '') : '')+
+      (pl.length ? '<span class="plan">'+pl.slice(0,4).map(t => '<i style="--tc:'+progColor(t.nome)+'"></i>').join('')+'</span>' : '')+
+      (n ? '<span class="dots">'+mi.slice(0,3).map(m => '<i class="'+(metaStatus(m, today) === 'feita' ? 'f' : metaStatus(m, today) === 'atrasada' ? 'e' : '')+'"></i>').join('')+li.slice(0,2).map(() => '<i></i>').join('')+'</span>' : '')+
+    '</button>';
+  }).join('');
+  renderDay(grade);
+  renderSummary(metas, ats);
+}
+
+function renderDay(grade){
+  const D = data(), iso = state.selDay;
+  $('#day-label').textContent = cap(fromISO(iso).toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'}));
+  const ms = D.metas.filter(m => m.date === iso).sort(cmpMeta);
+  $('#day-events').innerHTML = ms.length ? ms.map(goalHTML).join('') : '<p class="hint">Nenhuma meta com prazo neste dia.</p>';
+  const all = D.atends.filter(l => l.date === iso);
+  const pl = progPlannedOn(grade || progObjs(), iso);
+  $('#day-plan').innerHTML = pl.length ? '<h4 class="sub-h" style="margin-bottom:4px">Grade do dia</h4><div class="planrows">'+pl.map(t => {
+    const done = all.some(l => l.programa === t.nome), k = esc(t.nome);
+    return '<div class="planrow"><span class="p-name"><span class="tl">'+tdot(t.nome)+k+'</span><em>'+esc([t.hora ? (t.fim ? t.hora+'–'+t.fim : t.hora) : '', t.local || ''].filter(Boolean).join(' · ') || 'Atendimento previsto')+'</em></span>'+
+      (done ? '<span class="pill pago">Registrado</span>' : '<button type="button" class="btn sm" data-act="plan-reg" data-name="'+k+'" data-key="pr:'+k+'">Registrar atendimento</button>')+'</div>';
+  }).join('')+'</div>' : '';
+  const items = all.filter(l => !state.programa || l.programa === state.programa).sort(cmpAtend);
+  $('#day-list').innerHTML = items.length ? items.map(l => {
+    const pn = l.paciente ? nameOf(l.paciente) : '';
+    return '<article class="lesson"><div class="lesson-h"><strong>'+esc(l.assunto)+'</strong>'+(l.programa ? '<span class="tag tl">'+tdot(l.programa)+esc(l.programa)+'</span>' : '')+(pn ? '<span class="tag">'+esc(pn)+'</span>' : '')+'</div>'+
+    (l.conduta ? '<p>'+esc(l.conduta)+'</p>' : '')+
+    (l.retorno ? '<div class="next">Retorno: '+esc(l.retorno)+'</div>' : '')+
+    '<div class="lesson-acts"><button type="button" class="btn ghost sm" data-act="edit-atend" data-id="'+esc(l.id)+'" data-key="le:'+esc(l.id)+'">Editar</button>'+
+    '<button type="button" class="btn danger sm" data-act="del-atend" data-id="'+esc(l.id)+'" data-key="ld:'+esc(l.id)+'">Excluir</button></div></article>';
+  }).join('') : '<p class="hint">Nenhum atendimento registrado neste dia. Preencha o assunto abaixo para registrar.</p>';
+}
+
+function renderSummary(metas, ats){
+  const ym = state.planMonth, host = $('#summary'), today = isoDate(new Date());
+  const title = '<h3 id="sum-title">Resumo de '+esc(monthLabel(ym).toLowerCase())+'</h3>';
+  if (!state.decided) { host.innerHTML = title+'<p class="hint">Carregando…</p>'; return; }
+  if (!metas.length && !ats.length) { host.innerHTML = title+'<p class="hint">Cadastre a primeira meta ou registre um atendimento do mês e o resumo aparece aqui, com o que foi feito e o que ficou pendente.</p>'; return; }
+  const t = metaTotals(metas, today), cats = metaCats(metas, today);
+  const list = (arr) => '<div class="weeks"><ul>'+arr.map(m => '<li><span class="d">'+m.date.slice(8)+'/'+m.date.slice(5,7)+'</span><span>'+esc(m.titulo)+((+m.alvo > 0) ? ' <em>· '+(+m.atual||0)+'/'+(+m.alvo)+(m.unidade ? ' '+esc(m.unidade) : '')+'</em>' : '')+'</span></li>').join('')+'</ul></div>';
+  const feitas = metas.filter(m => metaStatus(m, today) === 'feita'), abertas = metas.filter(m => metaStatus(m, today) === 'aberta'), atras = metas.filter(m => metaStatus(m, today) === 'atrasada');
+  host.innerHTML = title+
+    '<div class="mini"><div><b>'+t.feitas+'</b><span>'+(t.feitas === 1 ? 'feita' : 'feitas')+'</span></div><div><b>'+t.abertas+'</b><span>a fazer</span></div><div class="late"><b>'+t.atrasadas+'</b><span>'+(t.atrasadas === 1 ? 'não feita' : 'não feitas')+'</span></div></div>'+
+    (t.n ? '<div><h4>Metas cumpridas</h4><div class="bar" style="margin-top:0" role="img" aria-label="'+t.pct+'% das metas feitas"><i style="width:'+t.pct+'%"></i></div><p class="hint" style="margin-top:6px">'+t.pct+'% das metas do mês</p></div>' : '')+
+    (cats.length ? '<div><h4>Por categoria</h4><div class="cats">'+cats.map(c => '<span class="cat">'+esc(c.label)+'<b>'+c.feitas+'/'+c.n+'</b></span>').join('')+'</div></div>' : '')+
+    (atras.length ? '<div><h4>Não feitas</h4>'+list(atras)+'</div>' : '')+
+    (abertas.length ? '<div><h4>Ainda a fazer</h4>'+list(abertas)+'</div>' : '')+
+    (feitas.length ? '<div><h4>Feitas</h4>'+list(feitas)+'</div>' : '')+
+    '<p class="hint"><b>'+ats.length+'</b> '+(ats.length === 1 ? 'atendimento registrado' : 'atendimentos registrados')+' no mês.</p>'+
+    '<div class="sum-actions"><button type="button" class="btn ghost sm" data-act="copy-summary" data-key="copy">Copiar resumo</button></div>'+
+    '<textarea id="copy-fallback" class="sr" readonly aria-label="Resumo para copiar"></textarea>';
+}
+
+function render(){
+  const a = document.activeElement, fk = a && a.dataset ? a.dataset.key : null;
+  renderTbar(); renderChrome(); renderPacientes(); renderProgramas(); renderFinance(); renderPlanning();
+  if (sheet.open && sheet.kind === 'paciente') refreshPayGrid();
+  if (fk) { const el = document.querySelector('[data-key="'+(window.CSS && CSS.escape ? CSS.escape(fk) : fk)+'"]'); if (el && el !== document.activeElement) el.focus({preventScroll:true}); }
+}
+
+/* ---------- ficha do paciente ---------- */
+function progSelectHTML(id, cur){
+  const names = progNames(); if (cur && names.indexOf(cur) < 0) names.push(cur);
+  return '<select id="'+id+'" style="width:100%"><option value="">Sem programa</option>'+names.map(n => '<option value="'+esc(n)+'"'+(n === cur ? ' selected' : '')+'>'+esc(n)+'</option>').join('')+'</select>';
+}
+function sheetHTML(v, isEdit){
+  return '<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">'+
+    '<div class="sheet-h"><h3 id="sheet-title">'+(isEdit ? 'Ficha do paciente' : 'Novo paciente')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Fechar">'+CLOSE_ICON+'</button></div>'+
+    '<form id="paciente-form" novalidate>'+
+      '<fieldset><legend>Paciente</legend>'+
+        '<div class="field"><label for="sf-nome">Nome completo</label><input id="sf-nome" type="text" maxlength="120" value="'+esc(v.nome)+'" autocomplete="off"></div>'+
+        '<div class="grid2"><div class="field"><label for="sf-turma">Programa</label>'+progSelectHTML('sf-turma', v.programa)+'</div>'+
+        '<div class="field"><label for="sf-obj">Objetivo</label><select id="sf-obj" style="width:100%">'+OBJETIVOS.map(b => '<option value="'+b[0]+'"'+((v.objetivo || '') === b[0] ? ' selected' : '')+'>'+b[1]+'</option>').join('')+'</select></div></div>'+
+        '<div class="field"><label for="sf-nasc">Data de nascimento</label><input id="sf-nasc" type="date" value="'+esc(v.nasc)+'"></div>'+
+        '<div class="field"><label for="sf-rest">Restrições alimentares e alergias</label><textarea id="sf-rest" maxlength="1000" placeholder="Alergias, intolerâncias, aversões, condições que mudam o plano">'+esc(v.restricoes)+'</textarea></div>'+
+        '<div class="field"><label for="sf-obs">Observações</label><textarea id="sf-obs" maxlength="1000" placeholder="Rotina, histórico, preferências">'+esc(v.obs)+'</textarea></div>'+
+      '</fieldset>'+
+      '<fieldset><legend>Contato</legend>'+
+        '<div class="grid2"><div class="field"><label for="sf-tel">Telefone</label><input id="sf-tel" type="tel" maxlength="30" value="'+esc(v.tel)+'" autocomplete="off"></div>'+
+        '<div class="field"><label for="sf-email">E-mail</label><input id="sf-email" type="email" maxlength="120" value="'+esc(v.email)+'" autocomplete="off"></div></div>'+
+      '</fieldset>'+
+      '<fieldset><legend>Medidas e evolução</legend>'+
+        '<div class="grid2"><div class="field"><label for="sf-alt">Altura (cm)</label><input id="sf-alt" type="number" inputmode="decimal" min="0" step="0.1" value="'+esc(v.altura)+'" placeholder="Ex.: 165"></div>'+
+        '<div class="field"><label for="sf-pi">Peso inicial (kg)</label><input id="sf-pi" type="number" inputmode="decimal" min="0" step="0.1" value="'+esc(v.pesoInicial)+'" placeholder="Ex.: 72,5"></div></div>'+
+        '<div class="imc" id="sf-imc"></div>'+
+        '<div class="pesos-add"><div class="field"><label for="sf-pdata">Data da pesagem</label><input id="sf-pdata" type="date" value="'+isoDate(new Date())+'"></div>'+
+        '<div class="field"><label for="sf-pkg">Peso (kg)</label><input id="sf-pkg" type="number" inputmode="decimal" min="0" step="0.1" placeholder="0,0"></div>'+
+        '<button type="button" class="btn ghost sm" data-act="add-peso">Adicionar pesagem</button></div>'+
+        '<div class="pesos" id="sf-pesos"></div>'+
+      '</fieldset>'+
+      '<fieldset><legend>Acompanhamento mensal</legend>'+
+        '<div class="grid2"><div class="field"><label for="sf-valor">Valor (R$)</label><input id="sf-valor" type="number" inputmode="decimal" min="0" step="0.01" value="'+esc(v.valor)+'" placeholder="0,00"></div>'+
+        '<div class="field"><label for="sf-venc">Dia do vencimento</label><input id="sf-venc" type="number" inputmode="numeric" min="1" max="31" step="1" value="'+esc(v.venc)+'"></div></div>'+
+        '<div class="field"><label for="sf-inicio">Paciente desde</label><input id="sf-inicio" type="month" value="'+esc(v.inicio)+'" placeholder="AAAA-MM"></div>'+
+        '<label class="check"><input id="sf-ativo" type="checkbox"'+(v.ativo !== false ? ' checked' : '')+'>Acompanhamento ativo</label>'+
+      '</fieldset>'+
+      (isEdit ? '<div><div class="pay-h"><span class="lbl-s">Pagamentos de <span id="pay-year"></span></span></div><div class="paygrid" id="paygrid"></div></div>' : '')+
+      '<div class="err" id="sf-err" role="alert"></div>'+
+      '<div class="form-acts"><button type="submit" class="btn">Salvar</button><button type="button" class="btn ghost" data-act="close-sheet">Cancelar</button>'+
+      (isEdit ? '<button type="button" class="btn danger" data-act="del-paciente" id="del-paciente">Excluir paciente</button>' : '')+'</div>'+
+    '</form></div>';
+}
+
+function openSheet(html, firstId, kind, id){
+  sheet.open = true; sheet.kind = kind; sheet.id = id; sheet.opener = document.activeElement;
+  const ov = $('#overlay'); ov.innerHTML = html; ov.hidden = false;
+  document.body.style.overflow = 'hidden';
+  const f = $(firstId); if (f) f.focus();
+}
+function openPaciente(id){
+  const D = data(), s = id ? D.pacientes.find(x => x.id === id) : null;
+  if (id && !s) return;
+  const v = s || {nome:'', programa:state.programa || '', objetivo:'', nasc:'', tel:'', email:'', altura:'', pesoInicial:'', restricoes:'', obs:'', valor:'', venc:5, inicio:ymOf(new Date()), ativo:true};
+  sheet.pesos = pesosSorted(s || {}).map(p => ({d:p.d, kg:+p.kg}));
+  openSheet(sheetHTML(v, !!s), '#sf-nome', 'paciente', s ? s.id : null);
+  renderPesos();
+  if (s) refreshPayGrid();
+}
+function closeSheet(){
+  if (!sheet.open) return;
+  sheet.open = false; sheet.id = null; sheet.kind = '';
+  const ov = $('#overlay'); ov.hidden = true; ov.innerHTML = '';
+  document.body.style.overflow = '';
+  if (sheet.opener && document.contains(sheet.opener)) { try { sheet.opener.focus({preventScroll:true}); } catch(e){} }
+}
+function renderPesos(){
+  const host = $('#sf-pesos'); if (!host) return;
+  const arr = sheet.pesos;
+  if (!arr.length) { host.innerHTML = '<p class="hint" style="padding:12px 0">Nenhuma pesagem registrada ainda.</p>'; }
+  else {
+    host.innerHTML = arr.map((p, i) => ({p:p, i:i})).reverse().map(x => {
+      const prev = x.i > 0 ? arr[x.i-1].kg : (+($('#sf-pi') && $('#sf-pi').value) || null);
+      const dl = prev ? x.p.kg - prev : null;
+      return '<div class="peso"><span><b>'+fmtKg(x.p.kg)+' kg</b> <em>'+fmtBR(x.p.d)+(dl != null && dl !== 0 ? ' · '+fmtDelta(dl) : '')+'</em></span><button type="button" class="btn danger sm" data-act="del-peso" data-i="'+x.i+'">Remover</button></div>';
+    }).join('');
+  }
+  refreshIMC();
+}
+function refreshIMC(){
+  const el = $('#sf-imc'); if (!el) return;
+  const alt = parseFloat(String(($('#sf-alt') || {}).value || '').replace(',', '.')) || 0;
+  const pi = parseFloat(String(($('#sf-pi') || {}).value || '').replace(',', '.')) || 0;
+  const kg = sheet.pesos.length ? sheet.pesos[sheet.pesos.length-1].kg : pi;
+  const imc = imcOf(kg, alt);
+  el.textContent = imc ? 'IMC atual: '+fmtKg(imc)+' (peso de '+fmtKg(kg)+' kg e altura de '+Math.round(alt)+' cm)' : 'Informe altura e peso para ver o IMC.';
+}
+function addPeso(){
+  const d = $('#sf-pdata').value, kg = parseFloat(String($('#sf-pkg').value).replace(',', '.'));
+  const err = $('#sf-err');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) { err.textContent = 'Informe a data da pesagem.'; $('#sf-pdata').focus(); return; }
+  if (!(kg > 0 && kg < 500)) { err.textContent = 'Informe o peso em quilos.'; $('#sf-pkg').focus(); return; }
+  err.textContent = '';
+  sheet.pesos = sheet.pesos.filter(p => p.d !== d).concat([{d:d, kg:Math.round(kg*10)/10}]).sort((a, b) => a.d.localeCompare(b.d));
+  $('#sf-pkg').value = '';
+  renderPesos();
+}
+function refreshPayGrid(){
+  const host = $('#paygrid'); if (!host || !sheet.id) return;
+  const D = data(), s = D.pacientes.find(x => x.id === sheet.id);
+  if (!s) { closeSheet(); return; }
+  const year = +state.finMonth.slice(0,4), today = isoDate(new Date());
+  $('#pay-year').textContent = year;
+  host.innerHTML = MES.map((m, i) => {
+    const ym = year+'-'+pad(i+1), st = statusOf(s, ym, today), before = !!(s.inicio && ym < s.inicio && !(s.pay && s.pay[ym])), p = s.pay && s.pay[ym];
+    const txt = before ? '—' : p ? 'Pago' : st === 'atrasado' ? 'Atrasado' : st === 'isento' ? 'Isento' : 'Aberto';
+    return '<button type="button" class="pm '+(before ? 'na' : st)+'" data-act="pay-month" data-ym="'+ym+'" data-key="pm:'+ym+'" aria-pressed="'+(!!p)+'"'+(before || st === 'isento' && !p ? ' disabled' : '')+'><span class="pm-m">'+m+'</span><span class="pm-s">'+txt+'</span></button>';
+  }).join('');
+}
+function togglePay(id, ym){
+  const D = data(), s = D.pacientes.find(x => x.id === id); if (!s) return Promise.resolve();
+  const pay = Object.assign({}, s.pay || {});
+  if (pay[ym]) delete pay[ym]; else pay[ym] = {v:+s.valor || 0, d:isoDate(new Date())};
+  return act.savePaciente(Object.assign({}, s, {pay:pay}));
+}
+function savePacienteForm(){
+  const D = data(), err = $('#sf-err');
+  const nome = $('#sf-nome').value.trim();
+  if (!nome) { err.textContent = 'Informe o nome do paciente.'; $('#sf-nome').focus(); return; }
+  const num = id => parseFloat(String($(id).value).replace(',', '.')) || 0;
+  const valor = num('#sf-valor');
+  if (valor < 0) { err.textContent = 'O valor do acompanhamento não pode ser negativo.'; $('#sf-valor').focus(); return; }
+  const venc = Math.floor(+$('#sf-venc').value);
+  if (!(venc >= 1 && venc <= 31)) { err.textContent = 'Informe o dia do vencimento entre 1 e 31.'; $('#sf-venc').focus(); return; }
+  const altura = num('#sf-alt'), pi = num('#sf-pi');
+  if (altura < 0 || pi < 0) { err.textContent = 'Altura e peso não podem ser negativos.'; return; }
+  let inicio = $('#sf-inicio').value.trim();
+  if (!/^\d{4}-\d{2}$/.test(inicio)) inicio = ymOf(new Date());
+  const cur = sheet.id ? D.pacientes.find(x => x.id === sheet.id) : null;
+  const s = Object.assign({}, cur || {pay:{}, criado:Date.now()}, {
+    id: cur ? cur.id : uid(), nome:nome, programa:$('#sf-turma').value.trim(), objetivo:$('#sf-obj').value, nasc:$('#sf-nasc').value, restricoes:$('#sf-rest').value.trim(), obs:$('#sf-obs').value.trim(),
+    tel:$('#sf-tel').value.trim(), email:$('#sf-email').value.trim(), altura:altura || '', pesoInicial:pi || '', pesos:sheet.pesos.map(p => ({d:p.d, kg:p.kg})),
+    valor:valor, venc:venc, inicio:inicio, ativo:$('#sf-ativo').checked
+  });
+  closeSheet(); act.savePaciente(s);
+}
+
+/* ---------- metas: cadastro e andamento ---------- */
+function metaSheetHTML(v, isEdit){
+  const pacs = data().pacientes.slice().sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  return '<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">'+
+    '<div class="sheet-h"><h3 id="sheet-title">'+(isEdit ? 'Editar meta' : 'Nova meta')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Fechar">'+CLOSE_ICON+'</button></div>'+
+    '<form id="meta-form" novalidate>'+
+      '<fieldset><legend>Meta</legend>'+
+        '<div class="field"><label for="mf-titulo">O que você quer cumprir</label><input id="mf-titulo" type="text" maxlength="140" value="'+esc(v.titulo)+'" placeholder="Ex.: Atender 40 consultas no mês" autocomplete="off"></div>'+
+        '<div class="grid2"><div class="field"><label for="mf-cat">Categoria</label><select id="mf-cat" style="width:100%">'+Object.keys(CATS).map(k => '<option value="'+k+'"'+(catKey(v) === k ? ' selected' : '')+'>'+CATS[k]+'</option>').join('')+'</select></div>'+
+        '<div class="field"><label for="mf-data">Prazo</label><input id="mf-data" type="date" value="'+esc(v.date)+'"></div></div>'+
+        '<div class="field"><label for="mf-pac">Paciente (opcional)</label><select id="mf-pac" style="width:100%"><option value="">Sem paciente</option>'+pacs.map(p => '<option value="'+esc(p.id)+'"'+(v.paciente === p.id ? ' selected' : '')+'>'+esc(p.nome)+'</option>').join('')+'</select></div>'+
+        '<div class="field"><label for="mf-obs">Observações</label><textarea id="mf-obs" maxlength="1000" placeholder="Detalhes, passos, o que precisa estar pronto">'+esc(v.obs)+'</textarea></div>'+
+      '</fieldset>'+
+      '<fieldset><legend>Meta com número (opcional)</legend>'+
+        '<div class="grid2"><div class="field"><label for="mf-alvo">Quanto quer atingir</label><input id="mf-alvo" type="number" inputmode="decimal" min="0" step="1" value="'+esc(v.alvo || '')+'" placeholder="Ex.: 40"></div>'+
+        '<div class="field"><label for="mf-atual">Quanto já fez</label><input id="mf-atual" type="number" inputmode="decimal" min="0" step="1" value="'+esc(v.atual || '')+'" placeholder="0"></div></div>'+
+        '<div class="field"><label for="mf-un">Unidade</label><input id="mf-un" type="text" maxlength="30" value="'+esc(v.unidade)+'" placeholder="Ex.: consultas, posts, aulas" autocomplete="off"></div>'+
+        '<label class="check"><input id="mf-feita" type="checkbox"'+(v.feita ? ' checked' : '')+'>Meta já feita</label>'+
+      '</fieldset>'+
+      '<div class="err" id="mf-err" role="alert"></div>'+
+      '<div class="form-acts"><button type="submit" class="btn">Salvar meta</button><button type="button" class="btn ghost" data-act="close-sheet">Cancelar</button></div>'+
+    '</form></div>';
+}
+function openMeta(id, dateISO){
+  const D = data(), m = id ? D.metas.find(x => x.id === id) : null;
+  if (id && !m) return;
+  const v = m || {titulo:'', cat:'pacientes', date:dateISO || isoDate(new Date()), feita:false, alvo:'', atual:'', unidade:'', paciente:'', obs:''};
+  openSheet(metaSheetHTML(v, !!m), '#mf-titulo', 'meta', m ? m.id : null);
+}
+function saveMetaForm(){
+  const D = data(), err = $('#mf-err');
+  const titulo = $('#mf-titulo').value.trim();
+  if (!titulo) { err.textContent = 'Informe qual é a meta.'; $('#mf-titulo').focus(); return; }
+  const date = $('#mf-data').value;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { err.textContent = 'Informe o prazo da meta.'; $('#mf-data').focus(); return; }
+  const alvo = Math.max(0, parseFloat(String($('#mf-alvo').value).replace(',', '.')) || 0), atual = Math.max(0, parseFloat(String($('#mf-atual').value).replace(',', '.')) || 0);
+  const cur = sheet.id ? D.metas.find(x => x.id === sheet.id) : null;
+  let feita = $('#mf-feita').checked;
+  if (alvo > 0 && atual >= alvo) feita = true;
+  const m = Object.assign({}, cur || {criado:Date.now()}, {
+    id: cur ? cur.id : uid(), titulo:titulo, cat:$('#mf-cat').value, date:date, paciente:$('#mf-pac').value, obs:$('#mf-obs').value.trim(),
+    alvo:alvo, atual:atual, unidade:$('#mf-un').value.trim(), feita:feita, feitaEm: feita ? ((cur && cur.feita && cur.feitaEm) || isoDate(new Date())) : ''
+  });
+  closeSheet();
+  state.tab = 'metas'; state.planMonth = date.slice(0,7); state.selDay = date; resetLessonForm();
+  act.saveMeta(m);
+}
+function toggleMeta(id){
+  const m = data().metas.find(x => x.id === id); if (!m) return Promise.resolve();
+  const feita = !m.feita, n = Object.assign({}, m, {feita:feita, feitaEm: feita ? isoDate(new Date()) : ''});
+  if (feita && +m.alvo > 0 && (+m.atual || 0) < +m.alvo) n.atual = +m.alvo;
+  return act.saveMeta(n);
+}
+function stepMeta(id, d){
+  const m = data().metas.find(x => x.id === id); if (!m || !(+m.alvo > 0)) return Promise.resolve();
+  const atual = Math.max(0, (+m.atual || 0) + d), feita = atual >= +m.alvo;
+  return act.saveMeta(Object.assign({}, m, {atual:atual, feita:feita, feitaEm: feita ? (m.feitaEm || isoDate(new Date())) : ''}));
+}
+function goToMeta(id){
+  const m = data().metas.find(x => x.id === id); if (!m) return;
+  state.tab = 'metas'; state.planMonth = m.date.slice(0,7); state.selDay = m.date;
+  try { if (location.hash.slice(1) !== 'metas') location.hash = 'metas'; } catch(x){}
+  resetLessonForm(); render();
+  const d = $('#day'); if (d) d.scrollIntoView({block:'start'});
+}
+
+/* ---------- programas: cadastro ---------- */
+function progSheetHTML(v, isEdit){
+  const dias = progDias(v);
+  return '<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">'+
+    '<div class="sheet-h"><h3 id="sheet-title">'+(isEdit ? 'Editar programa' : 'Novo programa')+'</h3><button type="button" class="icon-btn" data-act="close-sheet" aria-label="Fechar">'+CLOSE_ICON+'</button></div>'+
+    '<form id="prog-form" novalidate>'+
+      '<fieldset><legend>Programa</legend>'+
+        '<div class="field"><label for="tf-nome">Nome do programa</label><input id="tf-nome" type="text" maxlength="60" value="'+esc(v.nome)+'" placeholder="Ex.: Emagrecimento" autocomplete="off"></div>'+
+        '<div class="field"><span class="lbl-s" id="tf-dias-l">Dias de atendimento</span><div class="dpicks" role="group" aria-labelledby="tf-dias-l">'+
+          DIA.map((d, i) => '<label class="dpick"><input type="checkbox" class="dchk" value="'+i+'"'+(dias.indexOf(i) >= 0 ? ' checked' : '')+'><span>'+cap(d)+'</span></label>').join('')+'</div></div>'+
+        '<div class="grid2"><div class="field"><label for="tf-hora">Início</label><input id="tf-hora" type="time" value="'+esc(v.hora)+'"></div>'+
+        '<div class="field"><label for="tf-fim">Término</label><input id="tf-fim" type="time" value="'+esc(v.fim)+'"></div></div>'+
+        '<div class="field"><label for="tf-local">Local</label><input id="tf-local" type="text" maxlength="120" value="'+esc(v.local)+'" autocomplete="off"></div>'+
+        '<div class="field"><label for="tf-obs">Observações</label><textarea id="tf-obs" maxlength="500" placeholder="Público, objetivo do programa, duração do acompanhamento">'+esc(v.obs)+'</textarea></div>'+
+      '</fieldset>'+
+      '<div class="err" id="tf-err" role="alert"></div>'+
+      '<div class="form-acts"><button type="submit" class="btn">Salvar programa</button><button type="button" class="btn ghost" data-act="close-sheet">Cancelar</button>'+
+      (isEdit ? '<button type="button" class="btn danger" data-act="del-prog">Excluir programa</button>' : '')+'</div>'+
+    '</form></div>';
+}
+function openProg(id, implName){
+  const D = data(), t = id ? (D.programas || []).find(x => x.id === id) : null;
+  if (id && !t) return;
+  const v = t || {nome:implName || '', dias:[], hora:'', fim:'', local:'', obs:''};
+  openSheet(progSheetHTML(v, !!t), t || implName ? '#tf-hora' : '#tf-nome', 'prog', t ? t.id : null);
+  sheet.impl = t ? '' : (implName || '');
+}
+function saveProgForm(){
+  const D = data(), err = $('#tf-err');
+  const nome = $('#tf-nome').value.trim();
+  if (!nome) { err.textContent = 'Informe o nome do programa.'; $('#tf-nome').focus(); return; }
+  const dup = progObjs().find(t => fold(t.nome) === fold(nome) && (sheet.id ? t.id !== sheet.id : fold(t.nome) !== fold(sheet.impl || '')));
+  if (dup) { err.textContent = 'Já existe um programa com esse nome.'; $('#tf-nome').focus(); return; }
+  const hora = $('#tf-hora').value, fim = $('#tf-fim').value;
+  if (hora && fim && fim <= hora) { err.textContent = 'O término precisa ser depois do início.'; $('#tf-fim').focus(); return; }
+  const cur = sheet.id ? (D.programas || []).find(x => x.id === sheet.id) : null;
+  const dias = $$('#prog-form .dchk:checked').map(c => +c.value);
+  const t = Object.assign({}, cur || {criado:Date.now()}, {id: cur ? cur.id : uid(), nome:nome, dias:dias, hora:hora, fim:fim, local:$('#tf-local').value.trim(), obs:$('#tf-obs').value.trim()});
+  const old = cur ? cur.nome : (sheet.impl && sheet.impl !== nome ? sheet.impl : '');
+  closeSheet(); act.savePrograma(t, old);
+}
+
+/* ---------- atendimentos ---------- */
+function setSel(sel, v, label){
+  if (v && !$$('option', sel).some(o => o.value === v)) { const o = document.createElement('option'); o.value = v; o.textContent = label || v; sel.appendChild(o); }
+  sel.value = v || '';
+}
+function fillLessonSelects(){
+  const sel = $('#lf-turma'), prev = sel.value;
+  sel.innerHTML = '<option value="">Sem programa</option>'+progNames().map(n => '<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
+  setSel(sel, prev);
+  const ps = $('#lf-pac'), pp = ps.value;
+  ps.innerHTML = '<option value="">Sem paciente específico</option>'+data().pacientes.slice().sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')).map(p => '<option value="'+esc(p.id)+'">'+esc(p.nome)+'</option>').join('');
+  setSel(ps, pp);
+}
+function resetLessonForm(){
+  state.editAt = null;
+  $('#lf-tema').value = ''; $('#lf-conteudo').value = ''; $('#lf-proxima').value = '';
+  setSel($('#lf-turma'), state.programa || state.lastProg || ''); setSel($('#lf-pac'), '');
+  $('#lf-title').textContent = 'Registrar atendimento'; $('#lf-save').textContent = 'Salvar atendimento'; $('#lf-cancel').hidden = true; $('#lf-err').textContent = '';
+}
+function editAtend(id){
+  const l = data().atends.find(x => x.id === id); if (!l) return;
+  state.editAt = id;
+  $('#lf-tema').value = l.assunto || ''; setSel($('#lf-turma'), l.programa || ''); setSel($('#lf-pac'), l.paciente || '', nameOf(l.paciente)); $('#lf-conteudo').value = l.conduta || ''; $('#lf-proxima').value = l.retorno || '';
+  $('#lf-title').textContent = 'Editar atendimento'; $('#lf-save').textContent = 'Salvar alterações'; $('#lf-cancel').hidden = false; $('#lf-err').textContent = '';
+  $('#lf-tema').focus(); $('#lesson-form').scrollIntoView({block:'nearest'});
+}
+function saveLessonForm(){
+  if (!state.decided) return;
+  const assunto = $('#lf-tema').value.trim();
+  if (!assunto) { $('#lf-err').textContent = 'Informe o assunto do atendimento.'; $('#lf-tema').focus(); return; }
+  const cur = state.editAt ? data().atends.find(x => x.id === state.editAt) : null;
+  let programa = $('#lf-turma').value; const pid = $('#lf-pac').value;
+  if (!programa && pid) { const p = data().pacientes.find(x => x.id === pid); if (p && p.programa) programa = p.programa; }
+  const l = Object.assign({}, cur || {}, {id: cur ? cur.id : uid(), date: cur ? cur.date : state.selDay, assunto:assunto, programa:programa, paciente:pid, conduta:$('#lf-conteudo').value.trim(), retorno:$('#lf-proxima').value.trim(), criado: cur ? (cur.criado || Date.now()) : Date.now()});
+  state.lastProg = programa;
+  resetLessonForm(); act.saveAtend(l);
+}
+
+/* ---------- resumo e exportação ---------- */
+async function copySummary(){
+  const text = summaryText(state.planMonth, monthMetas(), monthAtends(), isoDate(new Date()));
+  try { await navigator.clipboard.writeText(text); toast('Resumo copiado.'); }
+  catch(e){
+    const ta = $('#copy-fallback');
+    if (ta) { ta.classList.remove('sr'); ta.value = text; ta.rows = 8; ta.select(); }
+    toast('Não foi possível copiar sozinho. O texto está selecionado abaixo.');
+  }
+}
+async function exportCSV(){
+  const D = data(), ym = state.finMonth, today = isoDate(new Date());
+  const rows = rowsFor(D.pacientes.filter(inProg), ym).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+  if (!rows.length) { toast('Não há acompanhamentos neste mês para exportar.'); return; }
+  const lines = [['Paciente','Programa','Telefone','E-mail','Vencimento','Valor','Situação','Pago em'].map(csvCell).join(';')];
+  rows.forEach(s => {
+    const p = s.pay && s.pay[ym];
+    lines.push([s.nome, s.programa || '', s.tel || '', s.email || '', fmtBR(dueDate(s, ym)), (p ? +p.v || 0 : +s.valor || 0).toFixed(2).replace('.', ','), statusOf(s, ym, today), p && p.d ? fmtBR(p.d) : ''].map(csvCell).join(';'));
+  });
+  try {
+    const blob = new Blob(['﻿'+lines.join('\r\n')], {type:'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = 'recebimentos-'+ym+'.csv'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  } catch(e){ console.error(e); toast('Não foi possível exportar agora.'); }
+}
+
+/* ---------- eventos de interface ---------- */
+function setTab(t){
+  if (TABS.indexOf(t) < 0) return;
+  state.tab = t;
+  try { if (location.hash.slice(1) !== t) location.hash = t; } catch(e){}
+  render();
+}
+function changeFinMonth(n){ state.finMonth = addMonths(state.finMonth, n); render(); }
+function changePlanMonth(n){
+  state.planMonth = addMonths(state.planMonth, n);
+  const today = isoDate(new Date());
+  state.selDay = today.indexOf(state.planMonth) === 0 ? today : state.planMonth+'-01';
+  resetLessonForm(); render();
+}
+const armed = new WeakMap();
+function confirmTwice(btn, label){
+  if (armed.get(btn)) { clearTimeout(armed.get(btn)); armed.delete(btn); return true; }
+  const orig = btn.textContent; btn.textContent = label;
+  armed.set(btn, setTimeout(() => { armed.delete(btn); if (document.contains(btn)) btn.textContent = orig; }, 3500));
+  return false;
+}
+
+document.addEventListener('click', e => {
+  const tab = e.target.closest('[data-tab]'); if (tab) { setTab(tab.dataset.tab); return; }
+  if (e.target === $('#overlay')) { closeSheet(); return; }
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  let a = el.dataset.act; const id = el.dataset.id;
+  if (a === 'hero-cta') a = el.dataset.target;
+  const needsData = ['new-prog','edit-prog','del-prog','plan-reg','new-paciente','new-meta','open-paciente','toggle-pay','pay-month','del-paciente','del-atend','edit-atend','edit-meta','del-meta','toggle-meta','meta-inc','meta-dec','open-meta'];
+  if (needsData.indexOf(a) >= 0 && !state.decided) return;
+  switch (a) {
+    case 'fin-prev': changeFinMonth(-1); break;
+    case 'fin-next': changeFinMonth(1); break;
+    case 'plan-prev': changePlanMonth(-1); break;
+    case 'plan-next': changePlanMonth(1); break;
+    case 'chip': state.finFilter = el.dataset.f; render(); break;
+    case 'new-paciente': openPaciente(null); break;
+    case 'open-paciente': openPaciente(id); break;
+    case 'toggle-pay': togglePay(id, state.finMonth); break;
+    case 'pay-month': togglePay(sheet.id, el.dataset.ym); break;
+    case 'close-sheet': closeSheet(); break;
+    case 'del-paciente':
+      if (confirmTwice(el, 'Confirmar exclusão')) { const sid = sheet.id; closeSheet(); act.delPaciente(sid); }
+      break;
+    case 'add-peso': addPeso(); break;
+    case 'del-peso': sheet.pesos.splice(+el.dataset.i, 1); renderPesos(); break;
+    case 'new-meta': openMeta(null, state.tab === 'metas' ? state.selDay : isoDate(new Date())); break;
+    case 'edit-meta': openMeta(id); break;
+    case 'del-meta': if (confirmTwice(el, 'Confirmar exclusão')) act.delMeta(id); break;
+    case 'toggle-meta': toggleMeta(id); break;
+    case 'meta-inc': stepMeta(id, 1); break;
+    case 'meta-dec': stepMeta(id, -1); break;
+    case 'open-meta': goToMeta(id); break;
+    case 'go-metas': setTab('metas'); break;
+    case 'go-pacientes': setTab('pacientes'); break;
+    case 'set-prog': state.programa = el.dataset.name || ''; resetLessonForm(); render(); break;
+    case 'go-prog-pacientes': state.programa = el.dataset.name; state.tab = 'pacientes'; try { location.hash = 'pacientes'; } catch(x){} render(); window.scrollTo(0, 0); break;
+    case 'go-prog-plan': state.programa = el.dataset.name; state.tab = 'metas'; try { location.hash = 'metas'; } catch(x){} resetLessonForm(); render(); window.scrollTo(0, 0); break;
+    case 'new-prog': openProg(null, ''); break;
+    case 'edit-prog': openProg(id || null, el.dataset.name || ''); break;
+    case 'del-prog':
+      if (confirmTwice(el, 'Confirmar: pacientes ficam sem programa')) { const t = (data().programas || []).find(x => x.id === sheet.id); closeSheet(); if (t) act.delPrograma(t); }
+      break;
+    case 'plan-reg': setSel($('#lf-turma'), el.dataset.name); $('#lf-tema').focus(); $('#lesson-form').scrollIntoView({block:'nearest'}); break;
+    case 'al-chip': state.alFilter = el.dataset.f; render(); break;
+    case 'day': state.selDay = el.dataset.iso; resetLessonForm(); render(); break;
+    case 'edit-atend': editAtend(id); break;
+    case 'del-atend': if (confirmTwice(el, 'Confirmar exclusão')) { if (state.editAt === id) resetLessonForm(); act.delAtend(id); } break;
+    case 'cancel-edit': resetLessonForm(); break;
+    case 'copy-summary': copySummary(); break;
+    case 'export': exportCSV(); break;
+    case 'exit-demo': exitDemo(); break;
+    case 'logout': logout(); break;
+    case 'auth-mode': showAuth(el.dataset.mode); break;
+    case 'auth-retry': showAuth('loading'); startCloud(); break;
+  }
+});
+document.addEventListener('submit', e => {
+  e.preventDefault();
+  if (e.target.id === 'paciente-form') savePacienteForm();
+  else if (e.target.id === 'meta-form') saveMetaForm();
+  else if (e.target.id === 'prog-form') saveProgForm();
+  else if (e.target.id === 'lesson-form') saveLessonForm();
+  else if (e.target.id && e.target.id.indexOf('auth-') === 0) authSubmit(e.target.id);
+});
+document.addEventListener('input', e => {
+  if (e.target.id === 'sf-alt' || e.target.id === 'sf-pi') refreshIMC();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && sheet.open) { closeSheet(); return; }
+  if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.target.closest && e.target.closest('[role="tablist"]')) {
+    const i = TABS.indexOf(state.tab), n = TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length];
+    setTab(n); $('#tab-'+n).focus();
+  }
+});
+$('#al-q').addEventListener('input', e => { state.alQuery = e.target.value; renderPacientes(); });
+$('#fin-q').addEventListener('input', e => { state.finQuery = e.target.value; renderFinance(); });
+window.addEventListener('hashchange', () => { try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0 && h !== state.tab) { state.tab = h; render(); } } catch(e){} });
+
+/* ---------- cena do topo: frutinha sobre o prato ---------- */
+const FRUITS = ['morango','maçã','laranja'];
+function setFruit(k){
+  $$('#scene .fruit').forEach(g => g.classList.toggle('on', g.dataset.n === FRUITS[k]));
+  $('#hero-count').textContent = 'frutinha do dia · '+FRUITS[k];
+}
+function startScene(){
+  let k = 0; setFruit(0);
+  const calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!calm) setInterval(() => { k = (k + 1) % FRUITS.length; setFruit(k); }, 3200);
+}
+
+/* ---------- início ---------- */
+function keyRole(k){
+  if (/^sb_secret_/.test(k)) return 'service_role';
+  const p = k.split('.');
+  if (p.length === 3) { try { const j = JSON.parse(atob(p[1].replace(/-/g, '+').replace(/_/g, '/'))); return j.role || ''; } catch(e){} }
+  return '';
+}
+function boot(){
+  try { const h = location.hash.slice(1); if (TABS.indexOf(h) >= 0) state.tab = h; } catch(e){}
+  showAuth('loading');
+  startScene();
+  render();
+  window.addEventListener('scroll', () => document.documentElement.classList.toggle('scrolled', window.scrollY > 4), {passive:true});
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible' || !sb || !session || !state.decided || state.demo || sheet.open || pending > 0 || Date.now() - lastSync < 15000) return;
+    try { await loadAll(); render(); } catch(e){ console.error(e); }
+  });
+  const cfg = window.CADERNO_CONFIG || {};
+  const url = String(cfg.url || '').trim().replace(/\/+$/, ''), key = String(cfg.key || '').trim();
+  if (!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url) || key.length < 20) { showAuth('config'); return; }
+  if (keyRole(key) === 'service_role') { showAuth('secretkey'); return; }
+  if (!window.supabase || !window.supabase.createClient) { showAuth('nolib'); return; }
+  sb = window.supabase.createClient(url, key, {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true}});
+  sb.auth.onAuthStateChange((ev, sess) => {
+    if (ev === 'PASSWORD_RECOVERY') { authState.recovering = true; session = sess; showAuth('recovery'); return; }
+    if (ev === 'SIGNED_OUT' || !sess || !sess.user) {
+      const had = !!session; session = null;
+      if (had) resetState();
+      if (!authState.recovering) showAuth('login');
+      return;
+    }
+    const same = !!session && session.user.id === sess.user.id;
+    session = sess;
+    if (!same && !authState.recovering) setTimeout(startCloud, 0);
+  });
+}
+boot();
+})();
+
+</script>
+</body>
+</html>
